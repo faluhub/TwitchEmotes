@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.quesia.twitchemotes.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "client": [
+    "BlankGlyphMixin",
+    "ChatHudLineMixin",
+    "ChatHudMixin",
+    "CommandSuggestorMixin",
+    "SuggestionWindowMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

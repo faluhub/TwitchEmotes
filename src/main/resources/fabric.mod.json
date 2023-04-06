@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "twitchemotes",
+  "version": "${version}",
+  "name": "TwitchEmotes",
+  "description": "Adds emotes from FFZ, BTTV and 7TV to Minecraft chat.",
+  "authors": ["Quesia"],
+  "contact": {
+    "homepage": "https://github.com/QuesiaSR"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["me.quesia.twitchemotes.TwitchEmotes"]
+  },
+  "mixins": ["twitchemotes.mixins.json"],
+  "depends": {
+    "minecraft": "1.16.1"
+  }
+}

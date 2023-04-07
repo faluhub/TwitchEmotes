@@ -36,6 +36,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    public static Twirk TWIRK;
     public static final String TEMP_IMAGE_FORMAT = "png";
     public static final File TEMP_IMAGE_FILE = FabricLoader.getInstance().getConfigDir().resolve("temp." + TEMP_IMAGE_FORMAT).toFile();
     public static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
@@ -181,17 +182,16 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     public void setupTwirk() {
-        Twirk twirk = new TwirkBuilder(TWITCH_NAME, TWITCH_NAME, TWITCH_AUTH).setDebugLogMethod(s -> {
+        TWIRK = new TwirkBuilder(TWITCH_NAME, TWITCH_NAME, TWITCH_AUTH).setDebugLogMethod(s -> {
             if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
                 System.out.println(s);
             }
         }).build();
-        twirk.addIrcListener(new TwirkListener() {
+        TWIRK.addIrcListener(new TwirkListener() {
             private final MinecraftClient client = MinecraftClient.getInstance();
 
             @Override
             public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
-                log(message.getContent() + " = " + Arrays.toString(message.getContent().toCharArray()));
                 ((TwitchMessageListOwner) this.client.inGameHud.getChatHud()).addMessage("<" + sender.getDisplayName() + "> " + message.getContent(), message.getMessageID());
                 TwirkListener.super.onPrivMsg(sender, message);
             }
@@ -218,15 +218,15 @@ public class TwitchEmotes implements ClientModInitializer {
             public void onDisconnect() {
                 log("Disconnected from Twitch chat.");
                 try {
-                    if (!twirk.connect()) {
+                    if (!TWIRK.connect()) {
                         LOGGER.error("Couldn't reconnect to Twitch chat.");
-                        twirk.close();
+                        TWIRK.close();
                     }
-                } catch (IOException | InterruptedException e) { twirk.close(); }
+                } catch (IOException | InterruptedException e) { TWIRK.close(); }
                 TwirkListener.super.onDisconnect();
             }
         });
-        try { twirk.connect(); }
+        try { TWIRK.connect(); }
         catch (IOException | InterruptedException e) { LOGGER.warn("Couldn't connect to Twitch chat. This feature will be disabled."); }
     }
 
@@ -245,7 +245,9 @@ public class TwitchEmotes implements ClientModInitializer {
                 boolean zeroWidth = List.of("5e76d338d6581c3724c0f0b2", "5e76d399d6581c3724c0f0b8", "567b5b520e984428652809b6", "5849c9a4f52be01a7ee5f79d", "567b5c080e984428652809ba", "567b5dc00e984428652809bd", "58487cc6f52be01a7ee5f205", "5849c9c8f52be01a7ee5f79e").contains(id);
                 EMOTE_MAP.put(name, new Emote(name, id, image, zeroWidth));
             }
+        } catch (IOException ignored) { LOGGER.warn("Couldn't load BTTV emotes."); }
 
+        try {
             JsonArray ffz = getJsonResponse("https://api.betterttv.net/3/cached/frankerfacez/emotes/global").getAsJsonArray();
             JsonArray ffzUser = getJsonResponse("https://api.betterttv.net/3/cached/frankerfacez/users/twitch/" + TWITCH_ID).getAsJsonArray();
             ffz.addAll(ffzUser);
@@ -261,7 +263,9 @@ public class TwitchEmotes implements ClientModInitializer {
                 else { image = images.get("1x").getAsString(); }
                 EMOTE_MAP.put(name, new Emote(name, id, image, false));
             }
+        } catch (IOException ignored) { LOGGER.warn("Couldn't load FFZ emotes."); }
 
+        try {
             JsonArray stv = getJsonResponse("https://api.7tv.app/v2/emotes/global").getAsJsonArray();
             JsonArray stvUser = getJsonResponse("https://api.7tv.app/v2/users/" + TWITCH_ID + "/emotes").getAsJsonArray();
             stv.addAll(stvUser);
@@ -275,11 +279,9 @@ public class TwitchEmotes implements ClientModInitializer {
                 boolean zeroWidth = emote.get("visibility_simple").getAsJsonArray().contains(new JsonPrimitive("ZERO_WIDTH"));
                 EMOTE_MAP.put(name, new Emote(name, id, image, zeroWidth));
             }
+        } catch (IOException ignored) { LOGGER.warn("Couldn't load 7TV emotes."); }
 
-            log("Loaded " + EMOTE_MAP.size() + " emotes.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log("Loaded " + EMOTE_MAP.size() + " emotes.");
     }
 
     @Override

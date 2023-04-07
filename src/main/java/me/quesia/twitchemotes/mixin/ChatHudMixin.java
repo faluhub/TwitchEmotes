@@ -15,6 +15,8 @@ import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessageListOwner {
@@ -63,8 +66,17 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
         return instance.drawWithShadow(matrices, renderVanilla ? text : new LiteralText(chat), x, y, color);
     }
 
+    private String getStyledMessage(StringRenderable text) {
+        StringBuilder stringBuilder = new StringBuilder();
+        text.visit(string -> {
+            stringBuilder.append(string);
+            return Optional.empty();
+        });
+        return stringBuilder.toString();
+    }
+
     private String renderChat(TextRenderer instance, MatrixStack matrices, StringRenderable text, float y) {
-        String[] words = text.getString().split(" ");
+        String[] words = this.getStyledMessage(text).split(" ");
         int ratio = 8;
         int space = instance.getWidth(" ");
 

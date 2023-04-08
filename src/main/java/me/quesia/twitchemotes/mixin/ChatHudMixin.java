@@ -22,6 +22,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,7 +32,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessageListOwner {
@@ -44,8 +44,12 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
     @Shadow private int scrolledLines;
     @Shadow private boolean hasUnreadNewMessages;
     @Shadow public abstract void scroll(double amount);
+
+    @Shadow public abstract void removeMessage(int messageId);
+
     private final List<ChatHudLine> removeLines = new ArrayList<>();
     private final List<ChatHudLine> removeVisibleLines = new ArrayList<>();
+    private final List<Emote> visibleEmotes = new ArrayList<>();
 
     @Inject(method = "render", at = @At("HEAD"))
     private void removeQueuedLines(MatrixStack matrixStack, int i, CallbackInfo ci) {
@@ -66,17 +70,8 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
         return instance.drawWithShadow(matrices, renderVanilla ? text : new LiteralText(chat), x, y, color);
     }
 
-    private String getStyledMessage(StringRenderable text) {
-        StringBuilder stringBuilder = new StringBuilder();
-        text.visit(string -> {
-            stringBuilder.append(string);
-            return Optional.empty();
-        });
-        return stringBuilder.toString();
-    }
-
     private String renderChat(TextRenderer instance, MatrixStack matrices, StringRenderable text, float y) {
-        String[] words = this.getStyledMessage(text).split(" ");
+        String[] words = text.getString().split(" ");
         int ratio = 8;
         int space = instance.getWidth(" ");
 
@@ -128,12 +123,14 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             TwitchMessageOwner message = (TwitchMessageOwner) line;
             if (message.getMessageId().equals(messageId)) {
                 this.removeLines.add(line);
+                this.removeCache(line);
             }
         }
         for (ChatHudLine line : this.visibleMessages) {
             TwitchMessageOwner message = (TwitchMessageOwner) line;
             if (message.getMessageId().equals(messageId)) {
                 this.removeVisibleLines.add(line);
+                this.removeCache(line);
             }
         }
     }
@@ -144,12 +141,27 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             TwitchMessageOwner message = (TwitchMessageOwner) line;
             if (message.getMessageId() != null) {
                 this.removeLines.add(line);
+                this.removeCache(line);
             }
         }
         for (ChatHudLine line : this.visibleMessages) {
             TwitchMessageOwner message = (TwitchMessageOwner) line;
             if (message.getMessageId() != null) {
                 this.removeVisibleLines.add(line);
+                this.removeCache(line);
+            }
+        }
+    }
+
+    private void removeCache(ChatHudLine line) {
+        String[] words = line.getText().getString().split(" ");
+        for (String word : words) {
+            if (TwitchEmotes.EMOTE_MAP.containsKey(word) && !TwitchEmotes.FAILED_EMOTES.contains(word)) {
+                Emote emote = TwitchEmotes.EMOTE_MAP.get(word);
+                if (emote.hasImageCache()) {
+                    emote.clearImageCache();
+                    TwitchEmotes.log("Removed cache for emote '" + emote.getName() + "'.");
+                }
             }
         }
     }
@@ -170,14 +182,48 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             ((TwitchMessageOwner) line).setMessageId(messageId);
             this.visibleMessages.add(0, line);
         }
-        if (this.visibleMessages.size() > 100) {
+        while (this.visibleMessages.size() > 10) {
+            this.removeCache(this.visibleMessages.get(this.visibleMessages.size() - 1));
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
         ChatHudLine line = new ChatHudLine(timestamp, stringRenderable, 0);
         ((TwitchMessageOwner) line).setMessageId(messageId);
         this.messages.add(0, line);
-        if (this.messages.size() > 100) {
+        while (this.messages.size() > 10) {
+            this.removeCache(this.messages.get(this.messages.size() - 1));
             this.messages.remove(this.messages.size() - 1);
+        }
+    }
+
+    /**
+     * @author Quesia
+     * @reason Clearing cache.
+     */
+    @Overwrite
+    private void addMessage(StringRenderable stringRenderable, int messageId, int timestamp, boolean bl) {
+        if (messageId != 0) {
+            this.removeMessage(messageId);
+        }
+        int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
+        List<StringRenderable> list = ChatMessages.breakRenderedChatMessageLines(stringRenderable, i, this.client.textRenderer);
+        boolean bl2 = this.isChatFocused();
+        for (StringRenderable stringRenderable2 : list) {
+            if (bl2 && this.scrolledLines > 0) {
+                this.hasUnreadNewMessages = true;
+                this.scroll(1.0);
+            }
+            this.visibleMessages.add(0, new ChatHudLine(timestamp, stringRenderable2, messageId));
+        }
+        while (this.visibleMessages.size() > 10) {
+            this.removeCache(this.visibleMessages.get(this.visibleMessages.size() - 1));
+            this.visibleMessages.remove(this.visibleMessages.size() - 1);
+        }
+        if (!bl) {
+            this.messages.add(0, new ChatHudLine(timestamp, stringRenderable, messageId));
+            while (this.messages.size() > 10) {
+                this.removeCache(this.messages.get(this.messages.size() - 1));
+                this.messages.remove(this.messages.size() - 1);
+            }
         }
     }
 }

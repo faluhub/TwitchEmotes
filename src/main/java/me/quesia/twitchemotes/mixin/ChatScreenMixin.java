@@ -14,7 +14,7 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Override
     public void sendMessage(String message) {
-        if (!message.startsWith("/") && TwitchEmotes.TWIRK.isConnected()) {
+        if (TwitchEmotes.ENABLE_CHAT_BACK && !message.startsWith("/") && TwitchEmotes.TWIRK.isConnected()) {
             TwitchEmotes.TWIRK.channelMessage(message);
         }
         super.sendMessage(message);

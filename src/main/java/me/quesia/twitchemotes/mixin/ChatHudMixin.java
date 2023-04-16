@@ -24,9 +24,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -44,12 +42,9 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
     @Shadow private int scrolledLines;
     @Shadow private boolean hasUnreadNewMessages;
     @Shadow public abstract void scroll(double amount);
-
     @Shadow public abstract void removeMessage(int messageId);
-
     private final List<ChatHudLine> removeLines = new ArrayList<>();
     private final List<ChatHudLine> removeVisibleLines = new ArrayList<>();
-    private final List<Emote> visibleEmotes = new ArrayList<>();
 
     @Inject(method = "render", at = @At("HEAD"))
     private void removeQueuedLines(MatrixStack matrixStack, int i, CallbackInfo ci) {
@@ -61,6 +56,11 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             this.visibleMessages.remove(line);
         }
         this.removeVisibleLines.clear();
+    }
+
+    @ModifyConstant(method = "render", constant = @Constant(intValue = 200))
+    private int longerLifespan(int constant) {
+        return TwitchEmotes.MESSAGE_LIFESPAN;
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;drawWithShadow(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/StringRenderable;FFI)I", ordinal = 0))
@@ -166,6 +166,11 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
         }
     }
 
+    @Inject(method = "clear", at = @At("HEAD"))
+    private void clearCache(boolean clearHistory, CallbackInfo ci) {
+        this.onMessagesClear();
+    }
+
     @Override
     public void addMessage(String message, String messageId) {
         StringRenderable stringRenderable = new LiteralText(message);
@@ -182,14 +187,14 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             ((TwitchMessageOwner) line).setMessageId(messageId);
             this.visibleMessages.add(0, line);
         }
-        while (this.visibleMessages.size() > 10) {
+        while (this.visibleMessages.size() > TwitchEmotes.CHAT_MESSAGE_LIMIT) {
             this.removeCache(this.visibleMessages.get(this.visibleMessages.size() - 1));
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
         ChatHudLine line = new ChatHudLine(timestamp, stringRenderable, 0);
         ((TwitchMessageOwner) line).setMessageId(messageId);
         this.messages.add(0, line);
-        while (this.messages.size() > 10) {
+        while (this.messages.size() > TwitchEmotes.CHAT_MESSAGE_LIMIT) {
             this.removeCache(this.messages.get(this.messages.size() - 1));
             this.messages.remove(this.messages.size() - 1);
         }
@@ -214,13 +219,13 @@ public abstract class ChatHudMixin extends DrawableHelper implements TwitchMessa
             }
             this.visibleMessages.add(0, new ChatHudLine(timestamp, stringRenderable2, messageId));
         }
-        while (this.visibleMessages.size() > 10) {
+        while (this.visibleMessages.size() > TwitchEmotes.CHAT_MESSAGE_LIMIT) {
             this.removeCache(this.visibleMessages.get(this.visibleMessages.size() - 1));
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
         if (!bl) {
             this.messages.add(0, new ChatHudLine(timestamp, stringRenderable, messageId));
-            while (this.messages.size() > 10) {
+            while (this.messages.size() > TwitchEmotes.CHAT_MESSAGE_LIMIT) {
                 this.removeCache(this.messages.get(this.messages.size() - 1));
                 this.messages.remove(this.messages.size() - 1);
             }

@@ -9,6 +9,7 @@
     "ChatHudMixin",
     "ChatScreenMixin",
     "CommandSuggestorMixin",
+    "MinecraftClientMixin",
     "SuggestionWindowMixin"
   ],
   "injectors": {

@@ -43,10 +43,14 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final List<String> FAILED_EMOTES = new ArrayList<>();
 
     public static int PREVIEW_CHARACTER_LIMIT;
+    public static int CHAT_MESSAGE_LIMIT;
+    public static int MESSAGE_LIFESPAN;
     public static int FRAMES_PER_SECOND;
     public static String TWITCH_NAME;
     public static String TWITCH_ID;
     public static String TWITCH_AUTH;
+    public static boolean CLEAR_CHAT_ON_JOIN;
+    public static boolean ENABLE_CHAT_BACK;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
@@ -144,6 +148,14 @@ public class TwitchEmotes implements ClientModInitializer {
         return object.get(key).getAsInt();
     }
 
+    private boolean getBoolValue(String key, boolean def, JsonObject object) {
+        if (!object.has(key)) {
+            object.addProperty(key, def);
+            return def;
+        }
+        return object.get(key).getAsBoolean();
+    }
+
     public void getValues() {
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve(MOD_NAME + ".json").toFile();
@@ -162,10 +174,14 @@ public class TwitchEmotes implements ClientModInitializer {
                 object = obj == null || obj.equals(JsonNull.INSTANCE) ? new JsonObject() : (JsonObject) obj;
             }
 
-            PREVIEW_CHARACTER_LIMIT = this.getIntValue("preview_character_limit", 18, object);
+            PREVIEW_CHARACTER_LIMIT = this.getIntValue("preview_character_limit", 24, object);
+            CHAT_MESSAGE_LIMIT = this.getIntValue("chat_message_limit", 10, object);
+            MESSAGE_LIFESPAN = this.getIntValue("message_lifespan", 200, object);
             FRAMES_PER_SECOND = this.getIntValue("frames_per_second", 30, object);
             TWITCH_NAME = this.getStringValue("twitch_name", "", object);
             TWITCH_AUTH = this.getStringValue("twitch_auth", "", object);
+            CLEAR_CHAT_ON_JOIN = this.getBoolValue("clear_chat_on_join", false, object);
+            ENABLE_CHAT_BACK = this.getBoolValue("enable_chat_back", true, object);
 
             FileWriter writer = new FileWriter(configFile);
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(object));

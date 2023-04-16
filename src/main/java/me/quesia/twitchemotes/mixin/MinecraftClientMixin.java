@@ -30,8 +30,8 @@ public class MinecraftClientMixin {
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V", ordinal = 1))
     private void openFatalScreen(MinecraftClient instance, Screen screen) {
         instance.openScreen(TwitchEmotes.TWIRK.isConnected() ? screen : new FatalErrorScreen(
-                new LiteralText("Permanent Connection Error!"),
-                new LiteralText("Couldn't connect to Twitch chat! This is a problem with Twitch itself and can only be fixed by relaunching the game.")
+                new LiteralText("Couldn't connect to Twitch chat!"),
+                new LiteralText("This is a problem with Twitch itself and can only be fixed by relaunching the game.")
         ));
     }
 }

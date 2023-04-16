@@ -27,7 +27,6 @@ If you want the mod to be ported to a specific version, open an issue or ask me 
    - This is needed for getting all of your emotes.
 5. Go to https://twitchapps.com/tmi, log in with Twitch and then copy the key that it gives you.
    - This is needed for listening to your Twitch chat.
-   - You can skip this, and the next step if you don't want the Twitch chat feature.
 6. In the `twitch_auth` field paste in the key you just copied.
 7. You can change the rest of the config values. Everything is explained below.
 

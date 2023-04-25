@@ -168,6 +168,21 @@ public class TwitchEmotes implements ClientModInitializer {
         return object.get(key).getAsBoolean();
     }
 
+    private JsonObject parseObject(File file) throws IOException {
+        FileReader reader = new FileReader(file);
+        JsonParser parser = new JsonParser();
+        Object obj = parser.parse(reader);
+        reader.close();
+        JsonObject object = obj == null || obj.equals(JsonNull.INSTANCE) ? new JsonObject() : (JsonObject) obj;
+        if (object.has("file")) {
+            File other = new File(object.get("file").getAsString());
+            if (other.exists()) {
+                return this.parseObject(other);
+            }
+        }
+        return object;
+    }
+
     public void getValues() {
         try {
             File configFile = FabricLoader.getInstance().getConfigDir().resolve(MOD_NAME + ".json").toFile();
@@ -178,13 +193,7 @@ public class TwitchEmotes implements ClientModInitializer {
                     LOGGER.warn("No access to the config file.");
                     return;
                 }
-            } else {
-                FileReader reader = new FileReader(configFile);
-                JsonParser parser = new JsonParser();
-                Object obj = parser.parse(reader);
-                reader.close();
-                object = obj == null || obj.equals(JsonNull.INSTANCE) ? new JsonObject() : (JsonObject) obj;
-            }
+            } else { object = this.parseObject(configFile); }
 
             PREVIEW_CHARACTER_LIMIT = this.getIntValue("preview_character_limit", 24, object);
             CHAT_MESSAGE_LIMIT = this.getIntValue("chat_message_limit", 10, object);

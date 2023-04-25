@@ -32,6 +32,8 @@ If you want the mod to be ported to a specific version, open an issue or ask me 
 
 ## Config Values:
 
+- `file`: This is a path to a file that houses the same config values listed below. This can be used for not having to copy the same across multiple instances of the game whenever you want to change the config file.
+
 - `preview_character_limit`: This changes the amount of characters long a command suggestion (the things that pop up when you press tab in chat) can be.
 - `chat_message_limit`: How many messages will be rendered in chat. It's crucial to keep this a low number as if it is too high there might be too many emotes stored in memory, which will make your computer bluescreen.
 - `message_lifespan`: The amount of ticks it takes for a message to fade out. The vanilla value is `200 ticks`.

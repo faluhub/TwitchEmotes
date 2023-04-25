@@ -40,6 +40,13 @@ If you want the mod to be ported to a specific version, open an issue or ask me 
 - `twitch_auth`: The auth key to your Twitch chat. This is used to connect to your chat.
 - `clear_chat_on_join`: If this is enabled, the chat will clear whenever you join a world.
 - `enable_chat_back`: If this is enabled, whenever you type in Minecraft chat it will send a message to your Twitch chat. This does not include Minecraft commands.
+- `send_alert_sounds`: If this is enabled, whenever someone follows/subs/etc... it will play a sound in game.
+- `show_room_state_updates`: If this is enabled, you'll see a message in chat whenever follower/sub/emote only is enabled/disabled or when slowmode is changed.
+- `show_follows`: If this is enabled, you'll see a message in chat whenever someone follows your Twitch channel.
+- `show_subs`: If this is enabled, you'll see a message in chat whenever someone subs to your Twitch channel.
+- `show_hypetrain`: If this is enabled, you'll see a message in chat whenever a hypetrain is started, when its level increments, and when it ends in your Twitch chat.
+- `show_cheers`: If this is enabled, you'll see a message in chat whenever someone cheers bits in your Twitch chat.
+- `show_raids`: If this is enabled, you'll see a message in chat whenever someone raids your Twitch channel.
 
 ## Credits:
 

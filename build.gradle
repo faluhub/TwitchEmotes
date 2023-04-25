@@ -35,7 +35,7 @@ dependencies {
 	include implementation(group: "com.twelvemonkeys.common", name: "common-lang", version: project.imageio_version)
 	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-core", version: project.imageio_version)
 	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-webp", version: project.imageio_version)
-	include implementation(group: "com.github.Gikkman", name: "Java-Twirk", version: project.twirk_version)
+	include implementation(group: "com.github.twitch4j", name: "twitch4j", version: project.twitch4j_version)
 }
 
 processResources {

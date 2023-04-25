@@ -64,6 +64,9 @@ public class Emote {
     }
 
     public void clearImageCache() {
+        for (NativeImage image : this.imageCache) {
+            image.close();
+        }
         this.imageCache.clear();
     }
 

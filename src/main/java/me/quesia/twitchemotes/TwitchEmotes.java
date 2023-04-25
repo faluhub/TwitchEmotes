@@ -1,12 +1,12 @@
 package me.quesia.twitchemotes;
 
-import com.gikk.twirk.Twirk;
-import com.gikk.twirk.TwirkBuilder;
-import com.gikk.twirk.events.TwirkListener;
-import com.gikk.twirk.types.clearChat.ClearChat;
-import com.gikk.twirk.types.clearMsg.ClearMsg;
-import com.gikk.twirk.types.twitchMessage.TwitchMessage;
-import com.gikk.twirk.types.users.TwitchUser;
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.chat.events.channel.*;
+import com.github.twitch4j.eventsub.events.ChannelRaidEvent;
+import com.github.twitch4j.pubsub.domain.ChatModerationAction;
+import com.github.twitch4j.pubsub.events.*;
 import com.google.gson.*;
 import me.quesia.twitchemotes.owner.TwitchMessageListOwner;
 import net.fabricmc.api.ClientModInitializer;
@@ -15,6 +15,11 @@ import net.fabricmc.loader.api.ModContainer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.*;
 
@@ -36,7 +41,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-    public static Twirk TWIRK;
+    public static TwitchClient TWITCH_CLIENT;
     public static final String TEMP_IMAGE_FORMAT = "png";
     public static final File TEMP_IMAGE_FILE = FabricLoader.getInstance().getConfigDir().resolve("temp." + TEMP_IMAGE_FORMAT).toFile();
     public static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
@@ -51,6 +56,13 @@ public class TwitchEmotes implements ClientModInitializer {
     public static String TWITCH_AUTH;
     public static boolean CLEAR_CHAT_ON_JOIN;
     public static boolean ENABLE_CHAT_BACK;
+    public static boolean SEND_ALERT_SOUNDS;
+    public static boolean SHOW_ROOM_STATE_UPDATES;
+    public static boolean SHOW_FOLLOWS;
+    public static boolean SHOW_SUBS;
+    public static boolean SHOW_HYPETRAIN;
+    public static boolean SHOW_CHEERS;
+    public static boolean SHOW_RAIDS;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
@@ -182,6 +194,13 @@ public class TwitchEmotes implements ClientModInitializer {
             TWITCH_AUTH = this.getStringValue("twitch_auth", "", object);
             CLEAR_CHAT_ON_JOIN = this.getBoolValue("clear_chat_on_join", false, object);
             ENABLE_CHAT_BACK = this.getBoolValue("enable_chat_back", true, object);
+            SEND_ALERT_SOUNDS = this.getBoolValue("send_alert_sounds", false, object);
+            SHOW_ROOM_STATE_UPDATES = this.getBoolValue("show_room_state_updates", true, object);
+            SHOW_FOLLOWS = this.getBoolValue("show_follows", true, object);
+            SHOW_SUBS = this.getBoolValue("show_subs", true, object);
+            SHOW_HYPETRAIN = this.getBoolValue("show_hypetrain", true, object);
+            SHOW_CHEERS = this.getBoolValue("show_cheers", true, object);
+            SHOW_RAIDS = this.getBoolValue("show_raids", true, object);
 
             FileWriter writer = new FileWriter(configFile);
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(object));
@@ -197,53 +216,108 @@ public class TwitchEmotes implements ClientModInitializer {
         }
     }
 
-    public void setupTwirk() {
-        TWIRK = new TwirkBuilder(TWITCH_NAME, TWITCH_NAME, TWITCH_AUTH).setDebugLogMethod(s -> {
-            if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-                System.out.println(s);
-            }
-        }).build();
-        TWIRK.addIrcListener(new TwirkListener() {
-            private final MinecraftClient client = MinecraftClient.getInstance();
+    private void playSound(SoundEvent event, MinecraftClient client) {
+        if (SEND_ALERT_SOUNDS) {
+            client.submit(() -> {
+                if (client.player != null) {
+                    client.player.playSound(event, SoundCategory.MASTER, 1.0F, 1.0F);
+                }
+            });
+        }
+    }
 
-            @Override
-            public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
-                ((TwitchMessageListOwner) this.client.inGameHud.getChatHud()).addMessage("<" + sender.getDisplayName() + "> " + message.getContent(), message.getMessageID());
-                TwirkListener.super.onPrivMsg(sender, message);
-            }
+    private String getDisplayName(IRCMessageEvent e) {
+        Optional<String> displayName = e.getTagValue("display-name");
+        return displayName.orElseGet(() -> e.getUser().getName());
+    }
 
-            @Override
-            public void onClearChat(ClearChat clearChat) {
-                ((TwitchMessageListOwner) this.client.inGameHud.getChatHud()).onMessagesClear();
-                TwirkListener.super.onClearChat(clearChat);
-            }
+    public void setupTwitchListeners() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        OAuth2Credential cred = new OAuth2Credential("twitch", TWITCH_AUTH);
+        TWITCH_CLIENT = TwitchClientBuilder.builder()
+                .withEnablePubSub(true)
+                .withEnableChat(true)
+                .withChatAccount(cred)
+                .build();
 
-            @Override
-            public void onClearMsg(ClearMsg clearMsg) {
-                ((TwitchMessageListOwner) this.client.inGameHud.getChatHud()).onMessageDelete(clearMsg.getTargetMsgId());
-                TwirkListener.super.onClearMsg(clearMsg);
-            }
+        TWITCH_CLIENT.getChat().joinChannel(TWITCH_NAME);
+        TWITCH_CLIENT.getEventManager().onEvent(ChannelMessageEvent.class, e -> ((TwitchMessageListOwner) client.inGameHud.getChatHud()).addMessage("<" + this.getDisplayName(e.getMessageEvent()) + "> " + e.getMessage(), e.getMessageEvent().getMessageId().orElse("")));
+        TWITCH_CLIENT.getEventManager().onEvent(ClearChatEvent.class, e -> ((TwitchMessageListOwner) client.inGameHud.getChatHud()).onMessagesClear());
+        TWITCH_CLIENT.getEventManager().onEvent(DeleteMessageEvent.class, e -> ((TwitchMessageListOwner) client.inGameHud.getChatHud()).onMessageDelete(e.getMsgId()));
 
-            @Override
-            public void onConnect() {
-                log("Connected to Twitch chat.");
-                TwirkListener.super.onConnect();
-            }
-
-            @Override
-            public void onDisconnect() {
-                log("Disconnected from Twitch chat.");
-                try {
-                    if (!TWIRK.connect()) {
-                        LOGGER.error("Couldn't reconnect to Twitch chat.");
-                        TWIRK.close();
-                    }
-                } catch (IOException | InterruptedException e) { TWIRK.close(); }
-                TwirkListener.super.onDisconnect();
-            }
-        });
-        try { TWIRK.connect(); }
-        catch (IOException | InterruptedException e) { LOGGER.warn("Couldn't connect to Twitch chat. This feature will be disabled."); }
+        if (SHOW_ROOM_STATE_UPDATES) {
+            TWITCH_CLIENT.getPubSub().listenForModerationEvents(cred, TWITCH_ID, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(ChatModerationEvent.class, e -> {
+                ChatModerationAction.ModerationAction action = e.getData().getModerationAction();
+                if (action.equals(ChatModerationAction.ModerationAction.EMOTE_ONLY) || action.equals(ChatModerationAction.ModerationAction.EMOTE_ONLY_OFF)) {
+                    boolean enabled = action.equals(ChatModerationAction.ModerationAction.EMOTE_ONLY);
+                    String text = "Emote only mode has been turned " + (enabled ? "on" : "off") + ".";
+                    client.inGameHud.getChatHud().addMessage(new LiteralText(text).formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+                } else if (action.equals(ChatModerationAction.ModerationAction.SUBSCRIBERS) || action.equals(ChatModerationAction.ModerationAction.SUBSCRIBERS_OFF)) {
+                    boolean enabled = action.equals(ChatModerationAction.ModerationAction.SUBSCRIBERS);
+                    String text = "Subscriber only mode has been turned " + (enabled ? "on" : "off") + ".";
+                    client.inGameHud.getChatHud().addMessage(new LiteralText(text).formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+                } else if (action.equals(ChatModerationAction.ModerationAction.FOLLOWERS) || action.equals(ChatModerationAction.ModerationAction.FOLLOWERS_OFF)) {
+                    boolean enabled = action.equals(ChatModerationAction.ModerationAction.FOLLOWERS);
+                    String text = "Follower only mode has been turned " + (enabled ? "on" : "off") + ".";
+                    client.inGameHud.getChatHud().addMessage(new LiteralText(text).formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+                } else if (action.equals(ChatModerationAction.ModerationAction.SLOW)) {
+                    client.inGameHud.getChatHud().addMessage(new LiteralText("Slow mode has been set to " + e.getData().getSlowDuration() + " seconds."));
+                } else if (action.equals(ChatModerationAction.ModerationAction.SLOW_OFF)) {
+                    client.inGameHud.getChatHud().addMessage(new LiteralText("Slow mode has been turned off."));
+                } else { return; }
+                this.playSound(SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN, client);
+            });
+        }
+        if (SHOW_FOLLOWS) {
+            TWITCH_CLIENT.getPubSub().listenForFollowingEvents(cred, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(FollowEvent.class, e -> {
+                this.playSound(SoundEvents.BLOCK_BELL_USE, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText(e.getUser().getName() + " is now following!").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+        }
+        if (SHOW_SUBS) {
+            TWITCH_CLIENT.getPubSub().listenForSubscriptionEvents(cred, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(SubscriptionEvent.class, e -> {
+                this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, client);
+                if (e.getGifted()) {
+                    client.inGameHud.getChatHud().addMessage(new LiteralText(e.getGiftedBy().getName() + " gifted a sub to " + e.getUser().getName() + "! (Tier " + e.getSubscriptionPlan() + ")").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+                    return;
+                }
+                String suffix = e.getMonths() > 1 ? " for " + e.getMonths() + " months!" : "!";
+                String streakSuffix = e.getSubStreak() > 0 ? " (" + e.getSubStreak() + " month" + (e.getSubStreak() > 1 ? "s" : "") + " streak)" : "";
+                client.inGameHud.getChatHud().addMessage(new LiteralText(e.getUser().getName() + " subscribed at tier " + e.getSubscriptionPlan() + suffix + streakSuffix).formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+        }
+        if (SHOW_HYPETRAIN) {
+            TWITCH_CLIENT.getPubSub().listenForHypeTrainEvents(cred, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(HypeTrainStartEvent.class, e -> {
+                this.playSound(SoundEvents.BLOCK_ANVIL_LAND, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText("A hypetrain has started!").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+            TWITCH_CLIENT.getEventManager().onEvent(HypeTrainLevelUpEvent.class, e -> {
+                this.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText("The hypetrain has levelled up to level " + e.getData().getProgress().getLevel() + "!").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+            TWITCH_CLIENT.getEventManager().onEvent(HypeTrainEndEvent.class, e -> {
+                this.playSound(SoundEvents.ITEM_SHIELD_BREAK, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText("The hypetrain has ended!" + (EMOTE_MAP.containsKey("Sadge") ? " Sadge" : "")).formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+        }
+        if (SHOW_CHEERS) {
+            TWITCH_CLIENT.getPubSub().listenForCheerEvents(cred, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(ChannelBitsEvent.class, e -> {
+                this.playSound(SoundEvents.ENTITY_VILLAGER_WORK_CARTOGRAPHER, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText(e.getData().getUserName() + " cheered " + e.getData().getBitsUsed() + " bits!").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+        }
+        if (SHOW_RAIDS) {
+            TWITCH_CLIENT.getPubSub().listenForRaidEvents(cred, TWITCH_ID);
+            TWITCH_CLIENT.getEventManager().onEvent(ChannelRaidEvent.class, e -> {
+                this.playSound(SoundEvents.EVENT_RAID_HORN, client);
+                client.inGameHud.getChatHud().addMessage(new LiteralText(e.getFromBroadcasterUserName() + " is raiding with " + e.getViewers() + " viewers!").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
+            });
+        }
     }
 
     public void collectEmotes() {
@@ -305,7 +379,7 @@ public class TwitchEmotes implements ClientModInitializer {
         log("Using " + MOD_NAME + " v" + MOD_VERSION);
 
         this.getValues();
-        this.setupTwirk();
+        this.setupTwitchListeners();
         this.collectEmotes();
     }
 }

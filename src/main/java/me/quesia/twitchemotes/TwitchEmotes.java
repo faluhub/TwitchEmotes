@@ -8,6 +8,9 @@ import com.github.twitch4j.eventsub.events.ChannelRaidEvent;
 import com.github.twitch4j.pubsub.domain.ChatModerationAction;
 import com.github.twitch4j.pubsub.events.*;
 import com.google.gson.*;
+import io.github.xanthic.cache.api.exception.NoDefaultCacheImplementationException;
+import io.github.xanthic.cache.core.CacheApiSettings;
+import io.github.xanthic.cache.provider.caffeine.CaffeineProvider;
 import me.quesia.twitchemotes.owner.TwitchMessageListOwner;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -241,6 +244,8 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     public void setupTwitchListeners() {
+        CacheApiSettings.getInstance().setDefaultCacheProvider(new CaffeineProvider());
+
         MinecraftClient client = MinecraftClient.getInstance();
         OAuth2Credential cred = new OAuth2Credential("twitch", TWITCH_AUTH);
         TWITCH_CLIENT = TwitchClientBuilder.builder()

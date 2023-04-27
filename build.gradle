@@ -2,6 +2,7 @@ plugins {
 	id "fabric-loom" version "1.1-SNAPSHOT"
 	id "maven-publish"
 	id "io.freefair.lombok" version "6.1.0-m2"
+	id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
@@ -25,6 +26,8 @@ loom {
     // accessWidenerPath = file("src/main/resources/twitchemotes.accesswidener")
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -32,10 +35,39 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	include modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
 	include modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_version))
-	include implementation(group: "com.twelvemonkeys.common", name: "common-lang", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-core", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-webp", version: project.imageio_version)
-	include implementation(group: "com.github.twitch4j", name: "twitch4j", version: project.twitch4j_version)
+
+	var imageioCore = "com.twelvemonkeys.imageio:imageio-core:${project.imageio_version}"
+	var imageioWebp = "com.twelvemonkeys.imageio:imageio-webp:${project.imageio_version}"
+	var twitch4j = "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
+	var caffeine = "io.github.xanthic.cache:cache-provider-caffeine:0.2.0"
+	include implementation(imageioCore)
+	include implementation(imageioWebp)
+	include implementation(twitch4j)
+	include implementation(caffeine)
+	shadow imageioCore
+	shadow imageioWebp
+	shadow twitch4j
+	shadow caffeine
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	archiveClassifier.set("sources")
+	from sourceSets.main.allSource
+}
+
+build {
+	shadowJar
+	build
+}
+
+shadowJar {
+	classifier "shadow"
+	configurations = [project.configurations.shadow]
+	remapJar {
+		dependsOn shadowJar
+		input.set shadowJar.archiveFile.get()
+	}
+	minimize()
 }
 
 processResources {

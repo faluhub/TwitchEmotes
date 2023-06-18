@@ -67,7 +67,6 @@ shadowJar {
 		dependsOn shadowJar
 		input.set shadowJar.archiveFile.get()
 	}
-	minimize()
 }
 
 processResources {

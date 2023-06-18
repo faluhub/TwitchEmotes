@@ -3,12 +3,12 @@ package me.quesia.twitchemotes;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
 import com.github.twitch4j.chat.events.channel.*;
 import com.github.twitch4j.eventsub.events.ChannelRaidEvent;
 import com.github.twitch4j.pubsub.domain.ChatModerationAction;
 import com.github.twitch4j.pubsub.events.*;
 import com.google.gson.*;
-import io.github.xanthic.cache.api.exception.NoDefaultCacheImplementationException;
 import io.github.xanthic.cache.core.CacheApiSettings;
 import io.github.xanthic.cache.provider.caffeine.CaffeineProvider;
 import me.quesia.twitchemotes.owner.TwitchMessageListOwner;
@@ -44,6 +44,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    private static final String CLIENT_ID = "5mhiyw6x4wsdpb7sch9xe1ym6uinil";
     public static TwitchClient TWITCH_CLIENT;
     public static final String TEMP_IMAGE_FORMAT = "png";
     public static final File TEMP_IMAGE_FILE = FabricLoader.getInstance().getConfigDir().resolve("temp." + TEMP_IMAGE_FORMAT).toFile();
@@ -84,6 +85,7 @@ public class TwitchEmotes implements ClientModInitializer {
         connection.setRequestMethod("GET");
         InputStream inputStream = connection.getInputStream();
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        inputStream.close();
         JsonParser parser = new JsonParser();
         return parser.parse(result);
     }
@@ -214,15 +216,18 @@ public class TwitchEmotes implements ClientModInitializer {
             SHOW_CHEERS = this.getBoolValue("show_cheers", true, object);
             SHOW_RAIDS = this.getBoolValue("show_raids", true, object);
 
+            if (!object.has("twitch_id")) {
+                JsonObject user = getJsonResponse("https://api.7tv.app/v2/users/" + TWITCH_NAME).getAsJsonObject();
+                if (user.has("twitch_id")) { TWITCH_ID = user.get("twitch_id").getAsString(); }
+                else if (object.has("twitch_id")) { TWITCH_ID = user.get("twitch_id").getAsString(); }
+                else { throw new RuntimeException("You are required to have a 7TV account with this username."); }
+                if (TWITCH_ID != null) { object.addProperty("twitch_id", TWITCH_ID); }
+            } else { TWITCH_ID = object.get("twitch_id").getAsString(); }
+
             FileWriter writer = new FileWriter(configFile);
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(object));
             writer.flush();
             writer.close();
-
-            JsonObject user = getJsonResponse("https://api.7tv.app/v2/users/" + TWITCH_NAME).getAsJsonObject();
-            if (user.has("twitch_id")) { TWITCH_ID = user.get("twitch_id").getAsString(); }
-            else if (object.has("twitch_id")) { TWITCH_ID = user.get("twitch_id").getAsString(); }
-            else { throw new RuntimeException("You are required to have a 7TV account with this username."); }
         } catch (IOException ignored) {
             LOGGER.error("Couldn't read/write config file.");
         }
@@ -247,8 +252,10 @@ public class TwitchEmotes implements ClientModInitializer {
         CacheApiSettings.getInstance().setDefaultCacheProvider(new CaffeineProvider());
 
         MinecraftClient client = MinecraftClient.getInstance();
-        OAuth2Credential cred = new OAuth2Credential("twitch", TWITCH_AUTH);
+        OAuth2Credential cred = new OAuth2Credential(TwitchIdentityProvider.PROVIDER_NAME, TWITCH_AUTH);
         TWITCH_CLIENT = TwitchClientBuilder.builder()
+                .withClientId(CLIENT_ID)
+                .withEnableHelix(true)
                 .withEnablePubSub(true)
                 .withEnableChat(true)
                 .withChatAccount(cred)

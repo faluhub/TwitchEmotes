@@ -1,8 +1,6 @@
 plugins {
-	id "fabric-loom" version "1.1-SNAPSHOT"
-	id "maven-publish"
+	id "fabric-loom" version "1.3-SNAPSHOT"
 	id "io.freefair.lombok" version "6.1.0-m2"
-	id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
@@ -19,54 +17,25 @@ repositories {
 }
 
 loom {
-    // Uncomment if you want to register the accesswidener
-    // PLEASE NOTE: The "accessWidener" property must also be added in your "fabric.mod.json" file
-    // Docs: https://fabricmc.net/wiki/tutorial:accesswideners
-	
-    // accessWidenerPath = file("src/main/resources/twitchemotes.accesswidener")
+	accessWidenerPath = file("src/main/resources/twitchemotes.accesswidener")
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
+configurations {
+	modIncludeImplementation
+	include.extendsFrom modIncludeImplementation
+	modImplementation.extendsFrom modIncludeImplementation
+	includeImplementation
+	include.extendsFrom includeImplementation
+	implementation.extendsFrom includeImplementation
+}
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	include modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
-	include modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_version))
-
-	var imageioCore = "com.twelvemonkeys.imageio:imageio-core:${project.imageio_version}"
-	var imageioWebp = "com.twelvemonkeys.imageio:imageio-webp:${project.imageio_version}"
-	var twitch4j = "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
-	var caffeine = "io.github.xanthic.cache:cache-provider-caffeine:0.2.0"
-	include implementation(imageioCore)
-	include implementation(imageioWebp)
-	include implementation(twitch4j)
-	include implementation(caffeine)
-	shadow imageioCore
-	shadow imageioWebp
-	shadow twitch4j
-	shadow caffeine
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier.set("sources")
-	from sourceSets.main.allSource
-}
-
-build {
-	shadowJar
-	build
-}
-
-shadowJar {
-	classifier "shadow"
-	configurations = [project.configurations.shadow]
-	remapJar {
-		dependsOn shadowJar
-		input.set shadowJar.archiveFile.get()
-	}
+	includeImplementation "com.github.gikkman:Java-Twirk:${project.twirk_version}"
+	include annotationProcessor(implementation("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}"))
 }
 
 processResources {
@@ -75,11 +44,6 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version
 	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	// it.options.release = 17
 }
 
 java {
@@ -92,16 +56,5 @@ java {
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}" }
-	}
-}
-
-// configure the maven publication
-publishing {
-      // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }

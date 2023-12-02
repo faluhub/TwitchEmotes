@@ -4,17 +4,24 @@
   "version": "${version}",
   "name": "TwitchEmotes",
   "description": "Adds emotes from FFZ, BTTV and 7TV to Minecraft chat.",
-  "authors": ["Quesia"],
+  "authors": ["falu"],
   "contact": {
-    "homepage": "https://github.com/QuesiaSR"
+    "homepage": "https://github.com/faluhub/TwitchEmotes"
   },
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
-    "client": ["me.quesia.twitchemotes.TwitchEmotes"]
+    "preLaunch": [
+      "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+    ],
+    "client": [
+      "me.falu.twitchemotes.TwitchEmotes"
+    ]
   },
   "mixins": ["twitchemotes.mixins.json"],
+  "accessWidener": "twitchemotes.accesswidener",
   "depends": {
-    "minecraft": "1.16.1"
+    "minecraft": "1.20.x",
+    "fabricloader": ">=0.15.0"
   }
 }

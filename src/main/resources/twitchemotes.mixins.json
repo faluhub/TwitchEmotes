@@ -4,8 +4,8 @@
   "package": "me.falu.twitchemotes.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
-    "GlyphRendererMixin",
     "DrawerMixin",
+    "GlyphRendererMixin",
     "StyleMixin"
   ],
   "injectors": {

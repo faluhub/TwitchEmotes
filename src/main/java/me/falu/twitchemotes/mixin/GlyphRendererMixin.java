@@ -50,17 +50,17 @@ public class GlyphRendererMixin implements EmoteStyleOwner {
             NativeImage img = this.texture.getImage();
             if (img != null) {
                 ci.cancel();
-                MatrixStack matrices = new MatrixStack();
+                int tempGlId = RenderSystem.getShaderTexture(0);
                 RenderSystem.setShaderTexture(0, this.texture.getGlId());
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-                Matrix4f matrix4f = matrices.peek().getPositionMatrix();
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                bufferBuilder.vertex(matrix4f, 0, 0, 50).texture(0, 0).next();
-                bufferBuilder.vertex(matrix4f, x, y + 16.0F, 50).texture(0.0F, img.getHeight() / 16.0F).next();
-                bufferBuilder.vertex(matrix4f, x + 16.0F, y + 16.0F, 50).texture(img.getWidth() / 16.0F, img.getHeight() / 16.0F).next();
-                bufferBuilder.vertex(matrix4f, x + 16.0F, y, 50).texture(img.getWidth() / 16.0F, 0.0F).next();
+                bufferBuilder.vertex(matrix, x, y, 50).texture(0.0F, 0.0F).next();
+                bufferBuilder.vertex(matrix, x, y + 16.0F, 50).texture(0.0F, img.getHeight() / 16.0F).next();
+                bufferBuilder.vertex(matrix, x + 16.0F, y + 16.0F, 50).texture(img.getWidth() / 16.0F, img.getHeight() / 16.0F).next();
+                bufferBuilder.vertex(matrix, x + 16.0F, y, 50).texture(img.getWidth() / 16.0F, 0.0F).next();
                 BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+                RenderSystem.setShaderTexture(0, tempGlId);
             }
         }
     }

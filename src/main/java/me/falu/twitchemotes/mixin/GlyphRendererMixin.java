@@ -1,11 +1,8 @@
 package me.falu.twitchemotes.mixin;
 
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.EmoteGlyph;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
@@ -20,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 @Mixin(GlyphRenderer.class)
@@ -55,7 +51,7 @@ public class GlyphRendererMixin implements EmoteStyleOwner {
             if (img != null) {
                 ci.cancel();
                 MatrixStack matrices = new MatrixStack();
-                this.texture.bindTexture();
+                RenderSystem.setShaderTexture(0, this.texture.getGlId());
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 Matrix4f matrix4f = matrices.peek().getPositionMatrix();
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();

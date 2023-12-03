@@ -1,6 +1,5 @@
 package me.falu.twitchemotes.mixin;
 
-import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.text.Style;
@@ -48,15 +47,6 @@ public class StyleMixin implements EmoteStyleOwner {
     @Override
     public Emote twitchemotes$getEmoteStyle(int index) {
         return this.emoteStyles != null ? this.emoteStyles.get(index) : null;
-    }
-
-    @Override
-    public void twitchemotes$debugEmoteStyles() {
-        if (this.emoteStyles != null) {
-            for (Integer key : this.emoteStyles.keySet()) {
-                TwitchEmotes.log(key + ": " + this.emoteStyles.get(key).name);
-            }
-        }
     }
 
     @Override

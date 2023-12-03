@@ -37,7 +37,6 @@ public class TwitchListener implements TwirkListener {
                 number += word.length() + 1;
             }
         }
-        ((EmoteStyleOwner) text.getStyle()).twitchemotes$debugEmoteStyles();
         this.sendMessage(text);
     }
 

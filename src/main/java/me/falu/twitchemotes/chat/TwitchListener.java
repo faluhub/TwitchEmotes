@@ -17,21 +17,27 @@ public class TwitchListener implements TwirkListener {
 
     @Override
     public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
-        MutableText text = MutableText.of(Text.literal("<" + sender.getDisplayName() + "> ").getContent());
+        String start = "<" + sender.getDisplayName() + "> ";
+        MutableText text = MutableText.of(Text.literal(start).getContent());
         String content = message.getContent().trim();
         String[] words = content.split(" ");
+        int number = start.length();
         for (String word : words) {
             Emote emote = TwitchEmotes.getEmote(word);
             if (emote != null) {
-                text.append(Text.literal(".").styled(style -> {
-                    ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emote);
-                    return style;
+                int finalNumber = number;
+                text.append(Text.literal("_").styled(s -> {
+                    ((EmoteStyleOwner) s).twitchemotes$addEmoteStyle(finalNumber, emote);
+                    return s;
                 }));
-                text.append(Text.literal(" "));
+                text.append(" ");
+                number += 2;
             } else {
                 text.append(Text.literal(word + " "));
+                number += word.length() + 1;
             }
         }
+        ((EmoteStyleOwner) text.getStyle()).twitchemotes$debugEmoteStyles();
         this.sendMessage(text);
     }
 

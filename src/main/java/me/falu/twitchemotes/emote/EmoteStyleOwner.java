@@ -1,8 +1,10 @@
 package me.falu.twitchemotes.emote;
 
-import me.falu.twitchemotes.emote.Emote;
+import java.util.Map;
 
 public interface EmoteStyleOwner {
-    void twitchemotes$setEmoteStyle(Emote emote);
-    Emote twitchemotes$getEmoteStyle();
+    void twitchemotes$addEmoteStyle(int index, Emote emoteStyle);
+    void twitchemotes$setEmoteStyles(Map<Integer, Emote> emoteStyles);
+    Emote twitchemotes$getEmoteStyle(int index);
+    void twitchemotes$debugEmoteStyles();
 }

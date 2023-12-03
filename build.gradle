@@ -1,5 +1,5 @@
 plugins {
-	id "fabric-loom" version "1.3-SNAPSHOT"
+	id "fabric-loom" version "1.4-SNAPSHOT"
 	id "io.freefair.lombok" version "6.1.0-m2"
 }
 
@@ -35,7 +35,6 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	includeImplementation "com.github.gikkman:Java-Twirk:${project.twirk_version}"
-	include annotationProcessor(implementation("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}"))
 }
 
 processResources {

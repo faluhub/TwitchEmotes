@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.mixin;
+package me.falu.twitchemotes.mixin.render;
 
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;

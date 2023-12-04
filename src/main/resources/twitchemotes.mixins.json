@@ -6,8 +6,12 @@
   "client": [
     "access.TextRendererAccessor",
 
-    "DrawerMixin",
-    "StyleMixin"
+    "render.DrawerMixin",
+    "render.StyleMixin",
+
+    "chat.ChatHudMixin",
+    "chat.ChatInputSuggestorMixin",
+    "chat.ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

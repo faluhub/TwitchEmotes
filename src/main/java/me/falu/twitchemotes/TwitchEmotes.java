@@ -15,12 +15,9 @@ import net.fabricmc.loader.api.ModContainer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TwitchEmotes implements ClientModInitializer {
     public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("twitchemotes").orElseThrow(RuntimeException::new);
@@ -58,9 +55,13 @@ public class TwitchEmotes implements ClientModInitializer {
         return true;
     }
 
-    @Nullable
-    public static Emote getEmote(String name) {
-        return EMOTE_MAP.get(name);
+    public static Emote getEmote(String name, Map<String, Emote> specific) {
+        if (EMOTE_MAP.containsKey(name)) { return EMOTE_MAP.get(name); }
+        return specific.get(name);
+    }
+
+    public static Set<String> getEmoteKeys() {
+        return EMOTE_MAP.keySet();
     }
 
     public static void invalidateEmote(Emote emote) {

@@ -1,35 +1,56 @@
 package me.falu.twitchemotes.chat;
 
+import com.gikk.twirk.enums.EMOTE_SIZE;
 import com.gikk.twirk.events.TwirkListener;
+import com.gikk.twirk.types.clearChat.ClearChat;
+import com.gikk.twirk.types.clearMsg.ClearMsg;
 import com.gikk.twirk.types.twitchMessage.TwitchMessage;
 import com.gikk.twirk.types.users.TwitchUser;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TwitchListener implements TwirkListener {
-    private void sendMessage(Text text) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
+    private TwitchMessageListOwner getMessageList() {
+        return (TwitchMessageListOwner) MinecraftClient.getInstance().inGameHud.getChatHud();
+    }
+
+    private Map<String, Emote> convertMessageEmotes(List<com.gikk.twirk.types.emote.Emote> emotes) {
+        Map<String, Emote> result = new HashMap<>();
+        for (com.gikk.twirk.types.emote.Emote emote : emotes) {
+            result.put(emote.getPattern(), Emote
+                    .builder()
+                    .name(emote.getPattern())
+                    .id(emote.getEmoteIDString())
+                    .url(emote.getEmoteImageUrl(EMOTE_SIZE.LARGE))
+                    .zeroWidth(false)
+                    .build());
+        }
+        return result;
     }
 
     @Override
     public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
-        MutableText text = MutableText.of(Text.literal("<" + sender.getDisplayName() + "> ").getContent());
-        String content = message.getContent().trim();
-        String[] words = content.split(" ");
-        for (String word : words) {
-            Emote emote = TwitchEmotes.getEmote(word);
-            if (emote != null) {
-                text.append(Text.literal("_").styled(s -> ((EmoteStyleOwner) s).twitchemotes$withEmoteStyle(emote)));
-                text.append(" ");
-            } else {
-                text.append(Text.literal(word + " "));
-            }
-        }
-        this.sendMessage(text);
+        this.getMessageList().twitchemotes$addMessage(
+                "<" + sender.getDisplayName() + "> ",
+                message.getContent().trim(),
+                message.getMessageID(),
+                this.convertMessageEmotes(message.getEmotes())
+        );
+    }
+
+    @Override
+    public void onClearChat(ClearChat clearChat) {
+        this.getMessageList().twitchemotes$clear();
+    }
+
+    @Override
+    public void onClearMsg(ClearMsg clearMsg) {
+        this.getMessageList().twitchemotes$delete(clearMsg.getTargetMsgId());
     }
 
     @Override

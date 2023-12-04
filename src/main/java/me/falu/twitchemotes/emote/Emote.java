@@ -18,15 +18,14 @@ public class Emote {
     public final boolean zeroWidth;
     public final EmoteTextureHandler textureHandler = new EmoteTextureHandler(this);
 
-    public void draw(float x, float y, Matrix4f matrix, float alpha) {
+    public boolean draw(float x, float y, Matrix4f matrix, float alpha) {
         NativeImage img = this.textureHandler.getImage();
         if (img != null) {
             this.createTextureBuffer(matrix, x - 1.0F, y, alpha);
             this.textureHandler.postRender();
-            return;
+            return true;
         }
-        TwitchEmotes.LOGGER.error("Couldn't get image for emote '" + this.name + "'.");
-        TwitchEmotes.invalidateEmote(this);
+        return false;
     }
 
     private void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {

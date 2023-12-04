@@ -1,4 +1,4 @@
-package me.falu.twitchemotes.mixin;
+package me.falu.twitchemotes.mixin.render;
 
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
@@ -23,12 +23,15 @@ public class DrawerMixin {
     private void drawEmote(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir) {
         Emote emote = ((EmoteStyleOwner) style).twitchemotes$getEmoteStyle();
         if (emote != null) {
-            emote.draw(this.x, this.y, this.matrix, this.alpha);
-            if (emote.textureHandler.getImage() != null) {
-                this.x += emote.textureHandler.getWidth();
-                cir.setReturnValue(false);
-                cir.cancel();
+            if (emote.draw(this.x, this.y, this.matrix, this.alpha)) {
+                if (emote.textureHandler.getImage() != null) {
+                    this.x += emote.textureHandler.getWidth();
+                    cir.setReturnValue(false);
+                    cir.cancel();
+                }
+                return;
             }
+            ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(null);
         }
     }
 }

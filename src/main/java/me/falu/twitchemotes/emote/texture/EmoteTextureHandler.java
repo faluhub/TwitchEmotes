@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @ToString
@@ -82,6 +83,10 @@ public class EmoteTextureHandler {
                 }
             } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
                 TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
+                TwitchEmotes.invalidateEmote(this.emote);
+                return null;
+            } catch (NoSuchElementException ignored) {
+                TwitchEmotes.LOGGER.warn("Emote format of '" + this.emote.name + "' is not supported.");
                 TwitchEmotes.invalidateEmote(this.emote);
                 return null;
             }

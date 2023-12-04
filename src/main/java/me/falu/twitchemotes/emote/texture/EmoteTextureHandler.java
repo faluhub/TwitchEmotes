@@ -26,7 +26,7 @@ public class EmoteTextureHandler {
     private final Emote emote;
     private final List<EmoteBackedTexture> textures = new ArrayList<>();
     private int currentFrame = 0;
-    private long lastRenderTime = 0L;
+    private long lastAdvanceTime = 0L;
 
     private String getImageType() {
         String[] parts = this.emote.url.split("\\.");
@@ -59,9 +59,8 @@ public class EmoteTextureHandler {
                 ImageInputStream stream = ImageIO.createImageInputStream(url.openStream());
                 ImageReader reader = ImageIO.getImageReadersBySuffix(this.getImageType()).next();
                 reader.setInput(stream);
-                reader.getNumImages(true); // This method reads image header + pre-loads all frames.
+                reader.getNumImages(true);
 
-                // I hope someone got fired over this. All the readers are package-private.
                 Field framesField = reader.getClass().getDeclaredField("frames");
                 framesField.setAccessible(true);
                 List<?> frames = (List<?>) framesField.get(reader);
@@ -93,17 +92,19 @@ public class EmoteTextureHandler {
     public void postRender() {
         if (this.textures.size() <= 1) { return; }
         long now = Util.getMeasuringTimeMs();
-        if (this.lastRenderTime > 0L) {
-            long difference = now - this.lastRenderTime;
-            long duration = this.textures.get(this.currentFrame).duration;
+        long duration = this.textures.get(this.currentFrame).duration;
+        if (this.lastAdvanceTime > 0L) {
+            long difference = now - this.lastAdvanceTime;
             if (difference >= duration) {
                 this.currentFrame++;
                 if (this.currentFrame >= this.textures.size()) {
                     this.currentFrame = 0;
                 }
+                this.lastAdvanceTime = now;
             }
+        } else {
+            this.lastAdvanceTime = now + duration;
         }
-        this.lastRenderTime = now;
     }
 
     public int getGlId() {

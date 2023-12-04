@@ -22,6 +22,7 @@ public class Emote {
         NativeImage img = this.textureHandler.getImage();
         if (img != null) {
             this.createTextureBuffer(matrix, x - 1.0F, y, alpha);
+            this.textureHandler.postRender();
             return;
         }
         TwitchEmotes.LOGGER.error("Couldn't get image for emote '" + this.name + "'.");
@@ -58,6 +59,5 @@ public class Emote {
                 .color(1.0F, 1.0F, 1.0F, alpha)
                 .next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        this.textureHandler.postRender();
     }
 }

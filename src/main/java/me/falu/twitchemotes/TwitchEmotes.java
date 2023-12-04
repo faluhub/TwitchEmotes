@@ -27,6 +27,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    public static final float EMOTE_SIZE = 9.0F;
 
     public static final ConfigValue<String> TWITCH_NAME = new ConfigValue<>("twitch_name", "");
     public static final ConfigValue<String> TWITCH_ID = new ConfigValue<>("twitch_id", "");

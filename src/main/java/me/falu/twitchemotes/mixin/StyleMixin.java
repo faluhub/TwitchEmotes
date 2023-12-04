@@ -2,19 +2,21 @@ package me.falu.twitchemotes.mixin;
 
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Mixin(Style.class)
-public class StyleMixin implements EmoteStyleOwner {
-    @Unique private Map<Integer, Emote> emoteStyles;
+public abstract class StyleMixin implements EmoteStyleOwner {
+    @Unique private Emote emoteStyle;
+    @Shadow public abstract Style withHoverEvent(@Nullable HoverEvent hoverEvent);
 
     @Inject(method = {
             "withColor(Lnet/minecraft/text/TextColor;)Lnet/minecraft/text/Style;",
@@ -34,23 +36,24 @@ public class StyleMixin implements EmoteStyleOwner {
     }, at = @At("RETURN"), cancellable = true)
     private void addEmoteStyle(CallbackInfoReturnable<Style> cir) {
         Style result = cir.getReturnValue();
-        ((EmoteStyleOwner) result).twitchemotes$setEmoteStyles(this.emoteStyles);
+        ((EmoteStyleOwner) result).twitchemotes$setEmoteStyle(this.emoteStyle);
         cir.setReturnValue(result);
     }
 
     @Override
-    public void twitchemotes$addEmoteStyle(int index, Emote emoteStyle) {
-        if (this.emoteStyles == null) { this.emoteStyles = new HashMap<>(); }
-        this.emoteStyles.put(index, emoteStyle);
+    public Style twitchemotes$withEmoteStyle(Emote emoteStyle) {
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(emoteStyle.name)));
+        ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emoteStyle);
+        return style;
     }
 
     @Override
-    public Emote twitchemotes$getEmoteStyle(int index) {
-        return this.emoteStyles != null ? this.emoteStyles.get(index) : null;
+    public void twitchemotes$setEmoteStyle(Emote emoteStyle) {
+        this.emoteStyle = emoteStyle;
     }
 
     @Override
-    public void twitchemotes$setEmoteStyles(Map<Integer, Emote> emoteStyles) {
-        this.emoteStyles = emoteStyles;
+    public Emote twitchemotes$getEmoteStyle() {
+        return this.emoteStyle;
     }
 }

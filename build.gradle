@@ -35,6 +35,8 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	includeImplementation "com.github.gikkman:Java-Twirk:${project.twirk_version}"
+	includeImplementation "com.twelvemonkeys.imageio:imageio-core:${project.imageio_version}"
+	includeImplementation "com.twelvemonkeys.imageio:imageio-webp:${project.imageio_version}"
 }
 
 processResources {

@@ -48,7 +48,7 @@ public class STVEmoteProvider extends EmoteProvider {
                 .builder()
                 .name(data.get("name").getAsString())
                 .id(data.get("id").getAsString())
-                .url("https:" + host.get("url").getAsString() + "/" + highest + "x_static.webp")
+                .url("https:" + host.get("url").getAsString() + "/" + highest + "x.webp")
                 .zeroWidth(emoteData.get("state").getAsJsonArray().contains(new JsonPrimitive("ZERO_WIDTH")))
                 .build();
     }

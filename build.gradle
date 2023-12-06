@@ -21,13 +21,19 @@ loom {
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
 	include implementation(group: "com.github.gikkman", name: "Java-Twirk", version: project.twirk_version)
+
 	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-core", version: project.imageio_version)
+	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-metadata", version: project.imageio_version)
 	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-webp", version: project.imageio_version)
+
+	include implementation(group: "com.twelvemonkeys.common", name: "common-lang", version: project.imageio_version)
+	include implementation(group: "com.twelvemonkeys.common", name: "common-io", version: project.imageio_version)
+	include implementation(group: "com.twelvemonkeys.common", name: "common-image", version: project.imageio_version)
 }
 
 processResources {

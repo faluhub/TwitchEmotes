@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.*;
 
@@ -114,6 +115,7 @@ public class TwitchEmotes implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         log("Using " + MOD_NAME + " v" + MOD_VERSION);
+        ImageIO.scanForPlugins();
         reload();
     }
 }

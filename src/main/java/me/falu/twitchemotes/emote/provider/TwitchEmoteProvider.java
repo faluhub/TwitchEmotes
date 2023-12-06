@@ -76,7 +76,7 @@ public class TwitchEmoteProvider extends EmoteProvider {
                 .builder()
                 .name(data.get("name").getAsString())
                 .id(id)
-                .url(IMAGE_URL_TEMPLATE.formatted(id, type.name().toLowerCase(), "dark", highest))
+                .url(String.format(IMAGE_URL_TEMPLATE, id, type.name().toLowerCase(), "dark", highest))
                 .imageType(type)
                 .build();
     }

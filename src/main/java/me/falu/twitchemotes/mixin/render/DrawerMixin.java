@@ -26,7 +26,7 @@ public class DrawerMixin {
             if (emote.draw(this.x, this.y, this.matrix, this.alpha)) {
                 if (emote.textureHandler.getImage() != null) {
                     this.x += emote.textureHandler.getWidth();
-                    cir.setReturnValue(false);
+                    cir.setReturnValue(true);
                     cir.cancel();
                 }
                 return;

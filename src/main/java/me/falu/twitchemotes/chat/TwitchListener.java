@@ -36,8 +36,7 @@ public class TwitchListener implements TwirkListener {
     @Override
     public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
         this.getMessageList().twitchemotes$addMessage(
-//                "<" + sender.getDisplayName() + "> ",
-                "<FortniteGod66> ",
+                "<" + sender.getDisplayName() + "> ",
                 message.getContent().trim(),
                 message.getMessageID(),
                 this.convertMessageEmotes(message.getEmotes())

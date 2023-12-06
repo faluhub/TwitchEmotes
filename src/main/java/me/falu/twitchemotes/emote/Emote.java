@@ -21,7 +21,7 @@ public class Emote {
     public boolean draw(float x, float y, Matrix4f matrix, float alpha) {
         NativeImage img = this.textureHandler.getImage();
         if (img != null) {
-            this.createTextureBuffer(matrix, x - 1.0F, y, alpha);
+            this.createTextureBuffer(matrix, x - 1.0F, y - 1.0F, alpha);
             this.textureHandler.postRender();
             return true;
         }

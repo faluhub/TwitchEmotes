@@ -36,7 +36,7 @@ public class ConfigFile {
         if (initialise) { init(); }
         try {
             FileReader reader = new FileReader(FILE);
-            Object obj = JsonParser.parseReader(reader);
+            Object obj = new JsonParser().parse(reader);
             reader.close();
 
             return JsonNull.INSTANCE.equals(obj) ? new JsonObject() : (JsonObject) obj;

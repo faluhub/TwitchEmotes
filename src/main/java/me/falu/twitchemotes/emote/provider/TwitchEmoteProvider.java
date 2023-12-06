@@ -31,7 +31,7 @@ public class TwitchEmoteProvider extends EmoteProvider {
             connection.setUseCaches(false);
             InputStream inputStream = connection.getInputStream();
             String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            return JsonParser.parseString(result);
+            return new JsonParser().parse(result);
         } catch (IOException e) {
             TwitchEmotes.LOGGER.error("Error while making HTTP request", e);
         }

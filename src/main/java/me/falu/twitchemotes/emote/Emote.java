@@ -5,9 +5,10 @@ import lombok.Builder;
 import lombok.ToString;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 
 @Builder
 @ToString
@@ -28,15 +29,17 @@ public class Emote {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     private void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
         int glId = this.textureHandler.getGlId();
         if (glId == -1) { return; }
-        RenderSystem.setShaderTexture(0, glId);
-        RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float size = TwitchEmotes.EMOTE_SIZE;
         float width = this.textureHandler.getWidth();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        RenderSystem.activeTexture(33984);
+        RenderSystem.bindTexture(glId);
+        RenderSystem.enableBlend();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder
                 .vertex(matrix, x, y, 100.0F)
                 .color(1.0F, 1.0F, 1.0F, alpha)
@@ -57,7 +60,9 @@ public class Emote {
                 .color(1.0F, 1.0F, 1.0F, alpha)
                 .texture(1.0F, 0.0F)
                 .next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        RenderSystem.enableAlphaTest();
+        Tessellator.getInstance().draw();
+        RenderSystem.disableBlend();
     }
 
     public enum ImageType {

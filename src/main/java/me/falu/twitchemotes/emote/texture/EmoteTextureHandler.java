@@ -60,7 +60,7 @@ public class EmoteTextureHandler {
                 ImageReader reader = ImageIO.getImageReadersBySuffix(this.emote.imageType.suffix).next();
                 reader.setInput(stream);
                 switch (this.emote.imageType) {
-                    case WEBP -> {
+                    case WEBP:
                         reader.getNumImages(true);
                         Field framesField = reader.getClass().getDeclaredField("frames");
                         framesField.setAccessible(true);
@@ -72,15 +72,15 @@ public class EmoteTextureHandler {
                                 durationField.setAccessible(true);
                                 int duration = durationField.getInt(frame);
                                 BufferedImage bufferedImage = reader.read(i);
-                                NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(bufferedImage));
+                                NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
                                 this.textures.add(new EmoteBackedTexture(img, duration));
                             }
                         } else {
-                            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(reader.read(0)));
+                            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(reader.read(0)));
                             this.textures.add(new EmoteBackedTexture(img));
                         }
-                    }
-                    case GIF -> {
+                        break;
+                    case GIF:
                         for (int i = 0; i < reader.getNumImages(true); i++) {
                             BufferedImage bufferedImage = reader.read(i);
                             Field metadataField = reader.getClass().getDeclaredField("imageMetadata");
@@ -88,11 +88,13 @@ public class EmoteTextureHandler {
                             Object metadata = metadataField.get(reader);
                             Field delayField = metadata.getClass().getDeclaredField("delayTime");
                             int delay = delayField.getInt(metadata);
-                            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(bufferedImage));
+                            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
                             this.textures.add(new EmoteBackedTexture(img, delay));
                         }
-                    }
-                    case STATIC -> this.textures.add(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.RGBA, imageStream)));
+                        break;
+                    case STATIC:
+                        this.textures.add(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.ABGR, imageStream)));
+                        break;
                 }
                 reader.dispose();
             } catch (IOException | IllegalAccessException | NoSuchFieldException e) {

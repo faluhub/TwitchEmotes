@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.falu.twitchemotes.emote.Emote;
 
+import java.util.Map;
+
 public class FFZEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.frankerfacez.com/v1";
 
@@ -55,7 +57,8 @@ public class FFZEmoteProvider extends EmoteProvider {
         Emote.ImageType type = data.has("animated") ? Emote.ImageType.WEBP : Emote.ImageType.STATIC;
         JsonObject images = type.equals(Emote.ImageType.WEBP) ? data.get("animated").getAsJsonObject() : data.get("urls").getAsJsonObject();
         int highest = -1;
-        for (String key : images.keySet()) {
+        for (Map.Entry<String, JsonElement> entry : images.entrySet()) {
+            String key = entry.getKey();
             int level = Integer.parseInt(key);
             if (highest == -1 || level > highest) {
                 highest = level;

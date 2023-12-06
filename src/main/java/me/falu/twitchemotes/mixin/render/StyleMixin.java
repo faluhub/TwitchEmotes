@@ -3,8 +3,8 @@ package me.falu.twitchemotes.mixin.render;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,17 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Style.class)
 public abstract class StyleMixin implements EmoteStyleOwner {
     @Unique private Emote emoteStyle;
-    @Shadow public abstract Style withHoverEvent(@Nullable HoverEvent hoverEvent);
+    @Shadow public abstract Style setHoverEvent(@Nullable HoverEvent hoverEvent);
 
     @Inject(method = {
             "withColor(Lnet/minecraft/text/TextColor;)Lnet/minecraft/text/Style;",
             "withBold",
             "withItalic",
-            "withUnderline",
-            "withStrikethrough",
-            "withObfuscated",
             "withClickEvent",
-            "withHoverEvent",
+            "setHoverEvent",
             "withInsertion",
             "withFont",
             "withFormatting(Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
@@ -42,7 +39,7 @@ public abstract class StyleMixin implements EmoteStyleOwner {
 
     @Override
     public Style twitchemotes$withEmoteStyle(Emote emoteStyle) {
-        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(emoteStyle.name)));
+        Style style = this.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(emoteStyle.name)));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emoteStyle);
         return style;
     }

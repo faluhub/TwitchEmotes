@@ -22,7 +22,7 @@ public abstract class EmoteProvider {
         connection.setRequestMethod("GET");
         InputStream inputStream = connection.getInputStream();
         String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        return JsonParser.parseString(result);
+        return new JsonParser().parse(result);
     }
 
     protected final JsonArray getArrayResponse(String endpoint) {

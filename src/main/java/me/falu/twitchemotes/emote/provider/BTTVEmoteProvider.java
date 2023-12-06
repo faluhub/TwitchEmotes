@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.falu.twitchemotes.emote.Emote;
 
-import java.util.Arrays;
-
 public class BTTVEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.betterttv.net/3/cached";
     private static final String IMG_URL = "https://cdn.betterttv.net/emote/%s/3x";

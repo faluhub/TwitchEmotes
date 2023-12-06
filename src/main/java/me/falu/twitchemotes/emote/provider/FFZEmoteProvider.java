@@ -3,10 +3,7 @@ package me.falu.twitchemotes.emote.provider;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
-
-import java.util.Arrays;
 
 public class FFZEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.frankerfacez.com/v1";

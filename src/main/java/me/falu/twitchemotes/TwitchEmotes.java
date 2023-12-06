@@ -5,10 +5,7 @@ import com.gikk.twirk.TwirkBuilder;
 import me.falu.twitchemotes.chat.TwitchListener;
 import me.falu.twitchemotes.config.ConfigValue;
 import me.falu.twitchemotes.emote.Emote;
-import me.falu.twitchemotes.emote.provider.BTTVEmoteProvider;
-import me.falu.twitchemotes.emote.provider.EmoteProvider;
-import me.falu.twitchemotes.emote.provider.FFZEmoteProvider;
-import me.falu.twitchemotes.emote.provider.STVEmoteProvider;
+import me.falu.twitchemotes.emote.provider.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -28,13 +25,15 @@ public class TwitchEmotes implements ClientModInitializer {
 
     public static final ConfigValue<String> TWITCH_NAME = new ConfigValue<>("twitch_name", "");
     public static final ConfigValue<String> TWITCH_ID = new ConfigValue<>("twitch_id", "");
+    public static final ConfigValue<String> TWITCH_CLIENT_ID = new ConfigValue<>("twitch_client_id", "");
     public static final ConfigValue<String> TWITCH_AUTH = new ConfigValue<>("twitch_auth", "");
 
     private static Twirk TWIRK;
     private static final EmoteProvider[] EMOTE_PROVIDERS = new EmoteProvider[] {
             new BTTVEmoteProvider(),
             new FFZEmoteProvider(),
-            new STVEmoteProvider()
+            new STVEmoteProvider(),
+            new TwitchEmoteProvider(TWITCH_AUTH, TWITCH_CLIENT_ID)
     };
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
 
@@ -46,7 +45,7 @@ public class TwitchEmotes implements ClientModInitializer {
         TWIRK.channelMessage(message);
     }
 
-    private static boolean validStrings(String ...strings) {
+    private static boolean validStrings(String... strings) {
         for (String string : strings) {
             if (string == null || string.trim().equals("")) {
                 return false;
@@ -71,12 +70,10 @@ public class TwitchEmotes implements ClientModInitializer {
     public static void reload() {
         String name = TWITCH_NAME.getValue();
         String id = TWITCH_ID.getValue();
+        String clientId = TWITCH_CLIENT_ID.getValue();
         String auth = TWITCH_AUTH.getValue();
-        if (!auth.startsWith("oauth:")) {
-            auth = "oauth:" + auth;
-        }
 
-        if (validStrings(id)) {
+        if (validStrings(id, auth, clientId)) {
             EMOTE_MAP.clear();
             for (EmoteProvider provider : EMOTE_PROVIDERS) {
                 List<Emote> emotes = provider.collectEmotes(id);
@@ -94,7 +91,7 @@ public class TwitchEmotes implements ClientModInitializer {
                 TWIRK.close();
                 TWIRK = null;
             }
-            TWIRK = new TwirkBuilder(name, name, auth)
+            TWIRK = new TwirkBuilder(name, name, "oauth:" + auth)
                     .setDebugLogMethod(s -> {
                         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
                             log(s);

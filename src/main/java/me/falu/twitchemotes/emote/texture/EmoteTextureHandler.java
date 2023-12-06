@@ -15,11 +15,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @ToString
@@ -29,23 +30,17 @@ public class EmoteTextureHandler {
     private int currentFrame = 0;
     private long lastAdvanceTime = 0L;
 
-    private String getImageType() {
-        String[] parts = this.emote.url.split("\\.");
-        return parts[parts.length - 1];
-    }
-
-    private byte[] convertImageToBytes(BufferedImage image) {
+    private ByteArrayInputStream convertImageToBytes(BufferedImage image) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", out);
-            return out.toByteArray();
+            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public float getWidth() {
-        if (this.emote.zeroWidth) { return 0.0F; }
         if (this.textures.isEmpty()) { return TwitchEmotes.EMOTE_SIZE; }
         NativeImageBackedTexture texture = this.textures.get(this.currentFrame);
         if (texture.getImage() == null) { return TwitchEmotes.EMOTE_SIZE; }
@@ -55,38 +50,53 @@ public class EmoteTextureHandler {
 
     public NativeImage getImage() {
         if (this.textures.isEmpty()) {
-            try {
-                URL url = new URL(this.emote.url);
-                ImageInputStream stream = ImageIO.createImageInputStream(url.openStream());
-                ImageReader reader = ImageIO.getImageReadersBySuffix(this.getImageType()).next();
+            URL url;
+            try { url = new URL(this.emote.url.replace("http:", "https:")); }
+            catch (MalformedURLException ignored) { return null; }
+            try (
+                    InputStream imageStream = url.openStream();
+                    ImageInputStream stream = ImageIO.createImageInputStream(imageStream)
+            ) {
+                ImageReader reader = ImageIO.getImageReadersBySuffix(this.emote.imageType.suffix).next();
                 reader.setInput(stream);
-                reader.getNumImages(true);
-
-                Field framesField = reader.getClass().getDeclaredField("frames");
-                framesField.setAccessible(true);
-                List<?> frames = (List<?>) framesField.get(reader);
-
-                if (!frames.isEmpty()) {
-                    for (int i = 0; i < frames.size(); i++) {
-                        Object frame = frames.get(i);
-                        Field durationField = frame.getClass().getDeclaredField("duration");
-                        durationField.setAccessible(true);
-                        int duration = durationField.getInt(frame);
-                        BufferedImage bufferedImage = reader.read(i);
-                        NativeImage img = NativeImage.read(NativeImage.Format.RGBA, new ByteArrayInputStream(this.convertImageToBytes(bufferedImage)));
-                        this.textures.add(new EmoteBackedTexture(img, duration));
+                switch (this.emote.imageType) {
+                    case WEBP -> {
+                        reader.getNumImages(true);
+                        Field framesField = reader.getClass().getDeclaredField("frames");
+                        framesField.setAccessible(true);
+                        List<?> frames = (List<?>) framesField.get(reader);
+                        if (!frames.isEmpty()) {
+                            for (int i = 0; i < frames.size(); i++) {
+                                Object frame = frames.get(i);
+                                Field durationField = frame.getClass().getDeclaredField("duration");
+                                durationField.setAccessible(true);
+                                int duration = durationField.getInt(frame);
+                                BufferedImage bufferedImage = reader.read(i);
+                                NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(bufferedImage));
+                                this.textures.add(new EmoteBackedTexture(img, duration));
+                            }
+                        } else {
+                            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(reader.read(0)));
+                            this.textures.add(new EmoteBackedTexture(img));
+                        }
                     }
-                } else {
-                    BufferedImage bufferedImage = reader.read(0);
-                    NativeImage img = NativeImage.read(NativeImage.Format.RGBA, new ByteArrayInputStream(this.convertImageToBytes(bufferedImage)));
-                    this.textures.add(new EmoteBackedTexture(img));
+                    case GIF -> {
+                        for (int i = 0; i < reader.getNumImages(true); i++) {
+                            BufferedImage bufferedImage = reader.read(i);
+                            Field metadataField = reader.getClass().getDeclaredField("imageMetadata");
+                            metadataField.setAccessible(true);
+                            Object metadata = metadataField.get(reader);
+                            Field delayField = metadata.getClass().getDeclaredField("delayTime");
+                            int delay = delayField.getInt(metadata);
+                            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(bufferedImage));
+                            this.textures.add(new EmoteBackedTexture(img, delay));
+                        }
+                    }
+                    case STATIC -> this.textures.add(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.RGBA, imageStream)));
                 }
+                reader.dispose();
             } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
                 TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
-                TwitchEmotes.invalidateEmote(this.emote);
-                return null;
-            } catch (NoSuchElementException ignored) {
-                TwitchEmotes.LOGGER.warn("Emote format of '" + this.emote.name + "' is not supported.");
                 TwitchEmotes.invalidateEmote(this.emote);
                 return null;
             }

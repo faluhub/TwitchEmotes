@@ -27,7 +27,7 @@ public class TwitchListener implements TwirkListener {
                     .name(emote.getPattern())
                     .id(emote.getEmoteIDString())
                     .url(emote.getEmoteImageUrl(EMOTE_SIZE.LARGE))
-                    .zeroWidth(false)
+                    .imageType(Emote.ImageType.STATIC)
                     .build());
         }
         return result;
@@ -36,7 +36,8 @@ public class TwitchListener implements TwirkListener {
     @Override
     public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
         this.getMessageList().twitchemotes$addMessage(
-                "<" + sender.getDisplayName() + "> ",
+//                "<" + sender.getDisplayName() + "> ",
+                "<FortniteGod66> ",
                 message.getContent().trim(),
                 message.getMessageID(),
                 this.convertMessageEmotes(message.getEmotes())

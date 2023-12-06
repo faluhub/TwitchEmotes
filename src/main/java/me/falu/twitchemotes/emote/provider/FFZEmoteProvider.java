@@ -1,11 +1,26 @@
 package me.falu.twitchemotes.emote.provider;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 
+import java.util.Arrays;
+
 public class FFZEmoteProvider extends EmoteProvider {
-    private static final String BASE_URL = "https://api.betterttv.net/3/cached/frankerfacez";
+    private static final String BASE_URL = "https://api.frankerfacez.com/v1";
+
+    private JsonArray getSetEmotes(long setId) {
+        JsonObject ffzSetData = this.getObjectResponse(BASE_URL + "/_set/" + setId);
+        if (ffzSetData.has("set")) {
+            JsonObject setData = ffzSetData.get("set").getAsJsonObject();
+            if (setData.has("emoticons")) {
+                return setData.get("emoticons").getAsJsonArray();
+            }
+        }
+        return new JsonArray();
+    }
 
     @Override
     public String getProviderName() {
@@ -14,30 +29,47 @@ public class FFZEmoteProvider extends EmoteProvider {
 
     @Override
     public JsonArray getGlobalEmotes() {
-        return this.getArrayResponse(BASE_URL + "/emotes/global");
+        JsonArray result = new JsonArray();
+        JsonArray defaultSets = this.getObjectResponse(BASE_URL + "/_set/global").get("default_sets").getAsJsonArray();
+        for (JsonElement element : defaultSets) {
+            result.addAll(this.getSetEmotes(element.getAsLong()));
+        }
+        return result;
     }
 
     @Override
-    public JsonArray getUserGlobalEmotes(String userId) {
-        return this.getArrayResponse(BASE_URL + "/users/twitch/" + userId);
+    public JsonArray getUserEmotes(String userId) {
+        JsonArray result = new JsonArray();
+        JsonObject ffzData = this.getObjectResponse(BASE_URL + "/_user/id/" + userId);
+        if (ffzData.has("user")) {
+            JsonObject userData = ffzData.get("user").getAsJsonObject();
+            if (userData.has("emote_sets")) {
+                JsonArray sets = userData.get("emote_sets").getAsJsonArray();
+                for (JsonElement element : sets) {
+                    result.addAll(this.getSetEmotes(element.getAsLong()));
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public Emote createEmote(JsonObject data) {
-        JsonObject images = data.get("images").getAsJsonObject();
+        Emote.ImageType type = data.has("animated") ? Emote.ImageType.WEBP : Emote.ImageType.STATIC;
+        JsonObject images = type.equals(Emote.ImageType.WEBP) ? data.get("animated").getAsJsonObject() : data.get("urls").getAsJsonObject();
         int highest = -1;
         for (String key : images.keySet()) {
-            int level = Integer.parseInt(key.replace("x", ""));
+            int level = Integer.parseInt(key);
             if (highest == -1 || level > highest) {
                 highest = level;
             }
         }
         return Emote
                 .builder()
-                .name(data.get("code").getAsString())
+                .name(data.get("name").getAsString())
                 .id(data.get("id").getAsString())
-                .url(images.get(highest + "x").getAsString())
-                .zeroWidth(false)
+                .url(images.get(String.valueOf(highest)).getAsString() + (type.equals(Emote.ImageType.WEBP) ? ".webp" : ""))
+                .imageType(type)
                 .build();
     }
 }

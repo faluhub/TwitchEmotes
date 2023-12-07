@@ -30,7 +30,7 @@ public class BTTVEmoteProvider extends EmoteProvider {
                 .builder()
                 .name(data.get("code").getAsString())
                 .id(id = data.get("id").getAsString())
-                .url(IMG_URL.formatted(id))
+                .url(String.format(IMG_URL, id))
                 .imageType(Emote.ImageType.fromSuffix(data.get("imageType").getAsString()))
                 .build();
     }

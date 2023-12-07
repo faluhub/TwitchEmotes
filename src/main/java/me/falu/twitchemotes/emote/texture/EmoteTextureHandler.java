@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 @RequiredArgsConstructor
 @ToString
 public class EmoteTextureHandler {

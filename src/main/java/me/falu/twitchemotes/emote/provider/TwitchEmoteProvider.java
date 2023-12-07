@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 @RequiredArgsConstructor
 public class TwitchEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.twitch.tv/helix/chat/emotes";

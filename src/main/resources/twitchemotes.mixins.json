@@ -9,7 +9,8 @@
     "chat.ChatScreenMixin",
 
     "render.ShadowDrawerMixin",
-    "render.StyleMixin"
+    "render.StyleMixin",
+    "render.TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

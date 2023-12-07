@@ -29,6 +29,7 @@ public class EmoteTextureHandler {
     private final List<EmoteBackedTexture> textures = new ArrayList<>();
     private int currentFrame = 0;
     private long lastAdvanceTime = 0L;
+    public boolean loading;
 
     private ByteArrayInputStream convertImageToBytes(BufferedImage image) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -49,60 +50,67 @@ public class EmoteTextureHandler {
     }
 
     public NativeImage getImage() {
-        if (this.textures.isEmpty()) {
-            URL url;
-            try { url = new URL(this.emote.url.replace("http:", "https:")); }
-            catch (MalformedURLException ignored) { return null; }
-            try (
+        if (this.textures.isEmpty() && !this.loading) {
+            new Thread(() -> {
+                List<EmoteBackedTexture> textures = new ArrayList<>();
+                URL url;
+                try { url = new URL(this.emote.url.replace("http:", "https:")); }
+                catch (MalformedURLException ignored) { return; }
+                try {
                     InputStream imageStream = url.openStream();
-                    ImageInputStream stream = ImageIO.createImageInputStream(imageStream)
-            ) {
-                ImageReader reader = ImageIO.getImageReadersBySuffix(this.emote.imageType.suffix).next();
-                reader.setInput(stream);
-                switch (this.emote.imageType) {
-                    case WEBP:
-                        reader.getNumImages(true);
-                        Field framesField = reader.getClass().getDeclaredField("frames");
-                        framesField.setAccessible(true);
-                        List<?> frames = (List<?>) framesField.get(reader);
-                        if (!frames.isEmpty()) {
-                            for (int i = 0; i < frames.size(); i++) {
-                                Object frame = frames.get(i);
-                                Field durationField = frame.getClass().getDeclaredField("duration");
-                                durationField.setAccessible(true);
-                                int duration = durationField.getInt(frame);
-                                BufferedImage bufferedImage = reader.read(i);
-                                NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
-                                this.textures.add(new EmoteBackedTexture(img, duration));
+                    ImageInputStream stream = ImageIO.createImageInputStream(imageStream);
+                    ImageReader reader = ImageIO.getImageReadersBySuffix(this.emote.imageType.suffix).next();
+                    reader.setInput(stream);
+                    switch (this.emote.imageType) {
+                        case WEBP:
+                            reader.getNumImages(true);
+                            Field framesField = reader.getClass().getDeclaredField("frames");
+                            framesField.setAccessible(true);
+                            List<?> frames = (List<?>) framesField.get(reader);
+                            if (!frames.isEmpty()) {
+                                for (int i = 0; i < frames.size(); i++) {
+                                    Object frame = frames.get(i);
+                                    Field durationField = frame.getClass().getDeclaredField("duration");
+                                    durationField.setAccessible(true);
+                                    int duration = durationField.getInt(frame);
+                                    BufferedImage bufferedImage = reader.read(i);
+                                    NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
+                                    textures.add(new EmoteBackedTexture(img, duration));
+                                }
+                            } else {
+                                NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(reader.read(0)));
+                                textures.add(new EmoteBackedTexture(img));
                             }
-                        } else {
-                            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(reader.read(0)));
-                            this.textures.add(new EmoteBackedTexture(img));
-                        }
-                        break;
-                    case GIF:
-                        for (int i = 0; i < reader.getNumImages(true); i++) {
-                            BufferedImage bufferedImage = reader.read(i);
-                            Field metadataField = reader.getClass().getDeclaredField("imageMetadata");
-                            metadataField.setAccessible(true);
-                            Object metadata = metadataField.get(reader);
-                            Field delayField = metadata.getClass().getDeclaredField("delayTime");
-                            int delay = delayField.getInt(metadata);
-                            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
-                            this.textures.add(new EmoteBackedTexture(img, delay));
-                        }
-                        break;
-                    case STATIC:
-                        this.textures.add(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.ABGR, imageStream)));
-                        break;
+                            break;
+                        case GIF:
+                            for (int i = 0; i < reader.getNumImages(true); i++) {
+                                BufferedImage bufferedImage = reader.read(i);
+                                Field metadataField = reader.getClass().getDeclaredField("imageMetadata");
+                                metadataField.setAccessible(true);
+                                Object metadata = metadataField.get(reader);
+                                Field delayField = metadata.getClass().getDeclaredField("delayTime");
+                                int delay = delayField.getInt(metadata);
+                                NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
+                                textures.add(new EmoteBackedTexture(img, delay));
+                            }
+                            break;
+                        case STATIC:
+                            textures.add(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.ABGR, imageStream)));
+                            break;
+                    }
+                    stream.close();
+                    imageStream.close();
+                    reader.dispose();
+                } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
+                    TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
+                    TwitchEmotes.invalidateEmote(this.emote);
                 }
-                reader.dispose();
-            } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
-                TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
-                TwitchEmotes.invalidateEmote(this.emote);
-                return null;
-            }
-        }
+                this.textures.addAll(textures);
+                this.loading = false;
+            }).start();
+            this.loading = true;
+            return null;
+        } else if (this.loading) { return null; }
         return this.textures.get(this.currentFrame).getImage();
     }
 
@@ -128,8 +136,10 @@ public class EmoteTextureHandler {
         try {
             return this.textures.get(this.currentFrame).getGlId();
         } catch (IndexOutOfBoundsException ignored) {
-            TwitchEmotes.LOGGER.error("Requested frame doesn't exist for emote '" + this.emote.name + "'.");
-            TwitchEmotes.invalidateEmote(this.emote);
+            if (!this.loading) {
+                TwitchEmotes.LOGGER.error("Requested frame doesn't exist for emote '" + this.emote.name + "'.");
+                TwitchEmotes.invalidateEmote(this.emote);
+            }
         }
         return -1;
     }

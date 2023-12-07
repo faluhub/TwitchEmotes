@@ -9,10 +9,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.ChatMessages;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.*;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,10 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin implements TwitchMessageListOwner {
@@ -41,17 +37,37 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @Unique
     private MutableText transformText(String prefix, String content, Map<String, Emote> specific) {
+        return this.transformText(prefix, new LiteralText(content), specific);
+    }
+
+    @Unique
+    private MutableText transformText(String prefix, Text content, Map<String, Emote> specific) {
         MutableText message = new LiteralText(prefix);
-        String[] words = content.split(" ");
-        for (String word : words) {
-            Emote emote = TwitchEmotes.getEmote(word, specific);
-            if (emote != null) {
-                message.append(new LiteralText("_").styled(s -> ((EmoteStyleOwner) s).twitchemotes$withEmoteStyle(emote)));
-                message.append(" ");
-            } else {
-                message.append(new LiteralText(word + " "));
+        content.visit((style, string) -> {
+            List<String> words = new ArrayList<>();
+            StringBuilder split = new StringBuilder();
+            for (int i = 0; i < string.length(); i++) {
+                char character = string.charAt(i);
+                split.append(character);
+                if (character == ' ' || i == string.length() - 1) {
+                    words.add(split.toString());
+                    split = new StringBuilder();
+                }
             }
-        }
+            for (String word : words) {
+                Emote emote = TwitchEmotes.getEmote(word.trim(), specific);
+                if (emote != null) {
+                    message.append(new LiteralText("_").styled(s -> ((EmoteStyleOwner) style).twitchemotes$withEmoteStyle(emote)));
+                    String deleted = word.replace(word.trim(), "");
+                    if (!deleted.isEmpty()) {
+                        message.append(new LiteralText(deleted).setStyle(style));
+                    }
+                } else {
+                    message.append(new LiteralText(word).setStyle(style));
+                }
+            }
+            return Optional.empty();
+        }, Style.EMPTY);
         return message;
     }
 
@@ -120,6 +136,6 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/StringRenderable;IIZ)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private StringRenderable transformMessageText(StringRenderable text) {
-        return this.transformText("", text.getString(), Maps.newHashMap());
+        return this.transformText("", (Text) text, Maps.newHashMap());
     }
 }

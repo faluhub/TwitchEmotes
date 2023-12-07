@@ -14,7 +14,9 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Override
     public void sendMessage(String message) {
-        TwitchEmotes.sendChatMessage(message);
+        if (!message.startsWith("/")) {
+            TwitchEmotes.sendChatMessage(message);
+        }
         super.sendMessage(message);
     }
 }

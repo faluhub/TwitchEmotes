@@ -37,6 +37,7 @@ public class TwitchEmotes implements ClientModInitializer {
             new TwitchEmoteProvider(TWITCH_AUTH, TWITCH_CLIENT_ID)
     };
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
+    public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);

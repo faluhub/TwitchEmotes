@@ -1,8 +1,10 @@
 package me.falu.twitchemotes.mixin.render;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.text.Style;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -23,15 +25,15 @@ public class ShadowDrawerMixin {
             method = "onChar",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/VertexConsumerProvider;getBuffer(Lnet/minecraft/client/render/RenderLayer;)Lnet/minecraft/client/render/VertexConsumer;",
+                    target = "Lnet/minecraft/client/font/TextRenderer;method_27518(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V",
                     shift = At.Shift.BEFORE
             ),
             cancellable = true
     )
-    private void drawEmote(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir) {
+    private void drawEmote(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, @Local(ordinal = 0) VertexConsumer vertexConsumer) {
         Emote emote = ((EmoteStyleOwner) style).twitchemotes$getEmoteStyle();
         if (emote != null) {
-            if (emote.draw(this.x, this.y, this.matrix, this.alpha)) {
+            if (emote.scheduleDraw(this.x, this.y, this.matrix, this.alpha)) {
                 this.x += emote.textureHandler.getWidth();
                 cir.setReturnValue(true);
                 cir.cancel();

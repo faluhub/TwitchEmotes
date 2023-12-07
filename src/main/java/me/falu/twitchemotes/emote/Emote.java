@@ -2,6 +2,7 @@ package me.falu.twitchemotes.emote;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
@@ -18,14 +19,17 @@ public class Emote {
     public final ImageType imageType;
     public final EmoteTextureHandler textureHandler = new EmoteTextureHandler(this);
 
-    public boolean draw(float x, float y, Matrix4f matrix, float alpha) {
+    public boolean scheduleDraw(float x, float y, Matrix4f matrix, float alpha) {
         NativeImage img = this.textureHandler.getImage();
-        if (img != null) {
-            this.createTextureBuffer(matrix, x - 1.0F, y - 1.0F, alpha);
-            this.textureHandler.postRender();
-            return true;
+        if (img != null || this.textureHandler.loading) {
+            return TwitchEmotes.SCHEDULED_DRAW.add(new DrawData(this, x, y, matrix, alpha));
         }
         return false;
+    }
+
+    public void draw(DrawData data) {
+        this.createTextureBuffer(data.matrix, data.x, data.y - 1.0F, data.alpha);
+        this.textureHandler.postRender();
     }
 
     private void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
@@ -33,6 +37,7 @@ public class Emote {
         if (glId == -1) { return; }
         RenderSystem.setShaderTexture(0, glId);
         RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+        RenderSystem.enableBlend();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float size = TwitchEmotes.EMOTE_SIZE;
         float width = this.textureHandler.getWidth();
@@ -58,6 +63,7 @@ public class Emote {
                 .texture(1.0F, 0.0F)
                 .next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        RenderSystem.disableBlend();
     }
 
     public enum ImageType {
@@ -78,6 +84,20 @@ public class Emote {
                 }
             }
             return STATIC;
+        }
+    }
+
+    @RequiredArgsConstructor
+    @ToString
+    public static class DrawData {
+        public final Emote emote;
+        public final float x;
+        public final float y;
+        public final Matrix4f matrix;
+        public final float alpha;
+
+        public void draw() {
+            this.emote.draw(this);
         }
     }
 }

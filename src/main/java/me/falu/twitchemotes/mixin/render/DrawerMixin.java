@@ -23,12 +23,10 @@ public class DrawerMixin {
     private void drawEmote(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir) {
         Emote emote = ((EmoteStyleOwner) style).twitchemotes$getEmoteStyle();
         if (emote != null) {
-            if (emote.draw(this.x, this.y, this.matrix, this.alpha)) {
-                if (emote.textureHandler.getImage() != null) {
-                    this.x += emote.textureHandler.getWidth();
-                    cir.setReturnValue(true);
-                    cir.cancel();
-                }
+            if (emote.scheduleDraw(this.x, this.y, this.matrix, this.alpha)) {
+                this.x += emote.textureHandler.getWidth();
+                cir.setReturnValue(true);
+                cir.cancel();
                 return;
             }
             ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(null);

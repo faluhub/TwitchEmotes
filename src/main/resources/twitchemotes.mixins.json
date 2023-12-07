@@ -4,12 +4,13 @@
   "package": "me.falu.twitchemotes.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
-    "render.DrawerMixin",
-    "render.StyleMixin",
-
     "chat.ChatHudMixin",
     "chat.ChatInputSuggestorMixin",
-    "chat.ClientPlayNetworkHandlerMixin"
+    "chat.ClientPlayNetworkHandlerMixin",
+
+    "render.DrawContextMixin",
+    "render.DrawerMixin",
+    "render.StyleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

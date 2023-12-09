@@ -6,7 +6,7 @@ import me.falu.twitchemotes.emote.Emote;
 
 public class BTTVEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.betterttv.net/3/cached";
-    private static final String IMG_URL = "https://cdn.betterttv.net/emote/%s/3x";
+    private static final String IMG_URL = "https://cdn.betterttv.net/emote/%s/3x.webp";
 
     @Override
     public String getProviderName() {
@@ -20,7 +20,15 @@ public class BTTVEmoteProvider extends EmoteProvider {
 
     @Override
     public JsonArray getUserEmotes(String userId) {
-        return this.getArrayResponse(BASE_URL + "/users/twitch/" + userId);
+        JsonArray result = new JsonArray();
+        JsonObject response = this.getObjectResponse(BASE_URL + "/users/twitch/" + userId);
+        if (response.has("channelEmotes")) {
+            result.addAll(response.get("channelEmotes").getAsJsonArray());
+        }
+        if (response.has("sharedEmotes")) {
+            result.addAll(response.get("sharedEmotes").getAsJsonArray());
+        }
+        return result;
     }
 
     @Override
@@ -31,7 +39,7 @@ public class BTTVEmoteProvider extends EmoteProvider {
                 .name(data.get("code").getAsString())
                 .id(id = data.get("id").getAsString())
                 .url(IMG_URL.formatted(id))
-                .imageType(Emote.ImageType.fromSuffix(data.get("imageType").getAsString()))
+                .imageType(Emote.ImageType.WEBP)
                 .build();
     }
 }

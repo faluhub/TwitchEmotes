@@ -1,7 +1,9 @@
 package me.falu.twitchemotes.mixin.render;
 
+import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -44,6 +46,14 @@ public abstract class StyleMixin implements EmoteStyleOwner {
     public Style twitchemotes$withEmoteStyle(Emote emoteStyle) {
         Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(emoteStyle.name)));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emoteStyle);
+        return style;
+    }
+
+    @Override
+    public Style twitchemotes$withBadgeStyle(Badge badgeStyle) {
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(badgeStyle.description)));
+        style = style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, badgeStyle.clickUrl));
+        ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(badgeStyle);
         return style;
     }
 

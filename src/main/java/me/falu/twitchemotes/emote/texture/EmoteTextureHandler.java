@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,7 +57,11 @@ public class EmoteTextureHandler {
                 List<EmoteBackedTexture> textures = new ArrayList<>();
                 URL url;
                 try { url = new URL(this.emote.url.replace("http:", "https:")); }
-                catch (MalformedURLException ignored) { return; }
+                catch (MalformedURLException ignored) {
+                    TwitchEmotes.LOGGER.error("Invalid URL for emote '" + this.emote.name + "'.");
+                    TwitchEmotes.invalidateEmote(this.emote);
+                    return;
+                }
                 try {
                     InputStream imageStream = url.openStream();
                     ImageInputStream stream = ImageIO.createImageInputStream(imageStream);
@@ -100,7 +105,7 @@ public class EmoteTextureHandler {
                     stream.close();
                     imageStream.close();
                     reader.dispose();
-                } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
+                } catch (IOException | IllegalAccessException | NoSuchFieldException | InaccessibleObjectException e) {
                     TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
                     TwitchEmotes.invalidateEmote(this.emote);
                 }

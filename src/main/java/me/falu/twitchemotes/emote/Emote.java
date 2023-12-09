@@ -11,6 +11,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.math.Matrix4f;
 
 @Builder
+@RequiredArgsConstructor
 @ToString
 public class Emote {
     public final String name;

@@ -19,7 +19,15 @@ If you want the mod to be ported to a specific version, open an issue or ask me 
 1. Launch and quit the game so that the configuration file gets created.
 2. Head to `.minecraft/config/TwitchEmotes_v3.json`.
 3. Go to [this website](https://chatterino.com/client_login) and log in. **Don't show this on stream!**
-4. Press the Copy button and use that data to fill out the config file. (Don't include the `;`'s at the end of each property)
+4. Press the Copy button and use that data to fill out the config file.
+    - Don't include the `;`'s at the end of each property.
+    - You can ignore the `twitch_channel` property, unless you want to listen to someone else's chat.
+
+## Other Config Values:
+
+- `twitch_channel`: The name of the Twitch channel you want to join. This property is optional and will default to the `twitch_name` property.
+- `show_user_colors`: Whether it shows the color that a chatter uses in the Twitch chat.
+- `show_badges`: Whether it shows the chatter's Twitch badges.
 
 ## Credits:
 

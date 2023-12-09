@@ -15,7 +15,11 @@ public class STVEmoteProvider extends EmoteProvider {
 
     @Override
     public JsonArray getGlobalEmotes() {
-        return this.getArrayResponse(BASE_URL + "/emote-sets/global");
+        JsonObject response = this.getObjectResponse(BASE_URL + "/emote-sets/global");
+        if (response.has("emotes")) {
+            return response.get("emotes").getAsJsonArray();
+        }
+        return new JsonArray();
     }
 
     @Override

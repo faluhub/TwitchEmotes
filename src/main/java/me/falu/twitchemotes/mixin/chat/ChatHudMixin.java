@@ -35,13 +35,13 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     @Unique private final Map<ChatHudLine, String> visibleMessageIds = new HashMap<>();
 
     @Unique
-    private MutableText transformText(String prefix, String content, Map<String, Emote> specific) {
+    private MutableText transformText(Text prefix, String content, Map<String, Emote> specific) {
         return this.transformText(prefix, new LiteralText(content), specific);
     }
 
     @Unique
-    private MutableText transformText(String prefix, Text content, Map<String, Emote> specific) {
-        MutableText message = new LiteralText(prefix);
+    private MutableText transformText(Text prefix, Text content, Map<String, Emote> specific) {
+        MutableText message = prefix.shallowCopy();
         content.visit((style, string) -> {
             List<String> words = new ArrayList<>();
             StringBuilder split = new StringBuilder();
@@ -107,7 +107,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     }
 
     @Override
-    public void twitchemotes$addMessage(String prefix, String content, String id, Map<String, Emote> specific) {
+    public void twitchemotes$addMessage(Text prefix, String content, String id, Map<String, Emote> specific) {
         MutableText message = this.transformText(prefix, content, specific);
         int timestamp = this.client.inGameHud.getTicks();
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
@@ -135,6 +135,6 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/StringRenderable;IIZ)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private StringRenderable transformMessageText(StringRenderable text) {
-        return this.transformText("", (Text) text, Maps.newHashMap());
+        return this.transformText(new LiteralText(""), (Text) text, Maps.newHashMap());
     }
 }

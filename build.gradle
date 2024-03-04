@@ -25,15 +25,12 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+	include implementation(fileTree(dir: "lib", include: ["*.jar"]))
+
+	include implementation(group: "net.java.dev.jna", name: "jna", version: project.jna_version)
+	include implementation(group: "net.java.dev.jna", name: "jna-platform", version: project.jna_version)
+
 	include implementation(group: "com.github.gikkman", name: "Java-Twirk", version: project.twirk_version)
-
-	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-core", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-metadata", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.imageio", name: "imageio-webp", version: project.imageio_version)
-
-	include implementation(group: "com.twelvemonkeys.common", name: "common-lang", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.common", name: "common-io", version: project.imageio_version)
-	include implementation(group: "com.twelvemonkeys.common", name: "common-image", version: project.imageio_version)
 }
 
 processResources {
@@ -45,9 +42,6 @@ processResources {
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 

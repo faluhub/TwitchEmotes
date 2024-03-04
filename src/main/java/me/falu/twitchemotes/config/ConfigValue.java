@@ -3,18 +3,20 @@ package me.falu.twitchemotes.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import me.falu.twitchemotes.TwitchEmotes;
 import org.apache.commons.lang3.ClassUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigValue<T> {
     private final String key;
     private final T def;
-    private T value = null;
+    @Getter private T value = null;
 
     public ConfigValue(String key, T def) {
         this.key = key;
@@ -37,17 +39,24 @@ public class ConfigValue<T> {
                         addMethod.invoke(config, this.key, newValue);
                         ConfigFile.write(config);
                         temp = newValue;
-                    } catch (Exception e) { TwitchEmotes.LOGGER.error("Occurrence 1", e); }
+                    } catch (Exception e) {
+                        TwitchEmotes.LOGGER.error("Occurrence 1", e);
+                    }
                 }
             }
             if (temp == null && element != null) {
                 Method elementMethod = this.getElementMethod(type, element);
                 if (elementMethod != null) {
-                    try { temp = (T) elementMethod.invoke(element); }
-                    catch (Exception e) { TwitchEmotes.LOGGER.error("Occurrence 2", e); }
+                    try {
+                        temp = (T) elementMethod.invoke(element);
+                    } catch (Exception e) {
+                        TwitchEmotes.LOGGER.error("Occurrence 2", e);
+                    }
                 }
             }
-            if (temp != null) { this.value = temp; }
+            if (temp != null) {
+                this.value = temp;
+            }
         } else {
             if (element == null || element.isJsonNull()) {
                 JsonObject config = ConfigFile.get();
@@ -59,8 +68,11 @@ public class ConfigValue<T> {
                         if (method.getName().equalsIgnoreCase("add")) {
                             if (method.getParameterCount() > 0 && method.getParameterTypes()[0].isAssignableFrom(type)) {
                                 for (Object value : list) {
-                                    try { method.invoke(array, value); }
-                                    catch (Exception e) { TwitchEmotes.LOGGER.error("Occurrence 3", e); }
+                                    try {
+                                        method.invoke(array, value);
+                                    } catch (Exception e) {
+                                        TwitchEmotes.LOGGER.error("Occurrence 3", e);
+                                    }
                                 }
                                 break;
                             }
@@ -80,15 +92,20 @@ public class ConfigValue<T> {
                     for (JsonElement element1 : element.getAsJsonArray()) {
                         Method elementMethod = this.getElementMethod(type, element1);
                         if (elementMethod != null) {
-                            try { list.add(elementMethod.invoke(element1)); }
-                            catch (Exception e) { TwitchEmotes.LOGGER.error("Occurrence 4", e); }
+                            try {
+                                list.add(elementMethod.invoke(element1));
+                            } catch (Exception e) {
+                                TwitchEmotes.LOGGER.error("Occurrence 4", e);
+                            }
                         }
                     }
                     this.value = (T) list;
                 } else {
                     this.value = (T) new ArrayList<>();
                 }
-            } catch (Exception e) { TwitchEmotes.LOGGER.error("Occurrence 5", e); }
+            } catch (Exception e) {
+                TwitchEmotes.LOGGER.error("Occurrence 5", e);
+            }
         }
     }
 
@@ -99,7 +116,9 @@ public class ConfigValue<T> {
                 return field.getType();
             }
         } catch (NoSuchFieldException ignored) {
-        } catch (Exception e) { TwitchEmotes.LOGGER.error("While getting primitive type (" + this.key + ")", e); }
+        } catch (Exception e) {
+            TwitchEmotes.LOGGER.error("While getting primitive type (" + this.key + ")", e);
+        }
         return null;
     }
 
@@ -125,10 +144,6 @@ public class ConfigValue<T> {
             }
         }
         return null;
-    }
-
-    public T getValue() {
-        return this.value;
     }
 
     public T getDefault() {

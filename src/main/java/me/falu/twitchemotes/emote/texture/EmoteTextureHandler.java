@@ -29,9 +29,9 @@ import java.util.List;
 public class EmoteTextureHandler {
     private final Emote emote;
     private final List<EmoteBackedTexture> textures = new ArrayList<>();
+    public boolean loading;
     private int currentFrame = 0;
     private long lastAdvanceTime = 0L;
-    public boolean loading;
 
     private ByteArrayInputStream convertImageToBytes(BufferedImage image) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -44,9 +44,13 @@ public class EmoteTextureHandler {
     }
 
     public float getWidth() {
-        if (this.textures.isEmpty()) { return TwitchEmotes.EMOTE_SIZE; }
+        if (this.textures.isEmpty()) {
+            return TwitchEmotes.EMOTE_SIZE;
+        }
         NativeImageBackedTexture texture = this.textures.get(this.currentFrame);
-        if (texture.getImage() == null) { return TwitchEmotes.EMOTE_SIZE; }
+        if (texture.getImage() == null) {
+            return TwitchEmotes.EMOTE_SIZE;
+        }
         NativeImage img = texture.getImage();
         return (TwitchEmotes.EMOTE_SIZE * img.getWidth()) / img.getHeight();
     }
@@ -56,8 +60,9 @@ public class EmoteTextureHandler {
             new Thread(() -> {
                 List<EmoteBackedTexture> textures = new ArrayList<>();
                 URL url;
-                try { url = new URL(this.emote.url.replace("http:", "https:")); }
-                catch (MalformedURLException ignored) {
+                try {
+                    url = new URL(this.emote.url.replace("http:", "https:"));
+                } catch (MalformedURLException ignored) {
                     TwitchEmotes.LOGGER.error("Invalid URL for emote '" + this.emote.name + "'.");
                     TwitchEmotes.invalidateEmote(this.emote);
                     return;
@@ -118,12 +123,16 @@ public class EmoteTextureHandler {
             }).start();
             this.loading = true;
             return null;
-        } else if (this.loading) { return null; }
+        } else if (this.loading) {
+            return null;
+        }
         return this.textures.get(this.currentFrame).getImage();
     }
 
     public void postRender() {
-        if (this.textures.size() <= 1) { return; }
+        if (this.textures.size() <= 1) {
+            return;
+        }
         long now = Util.getMeasuringTimeMs();
         long duration = this.textures.get(this.currentFrame).duration;
         if (this.lastAdvanceTime > 0L) {

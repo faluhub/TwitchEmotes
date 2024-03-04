@@ -87,8 +87,7 @@ public class FFZEmoteProvider extends EmoteProvider {
                     highest = level;
                 }
             }
-            return Emote
-                    .builder()
+            return Emote.builder()
                     .name(data.get("code").getAsString())
                     .id(data.get("id").getAsString())
                     .url(images.get(highest + "x").getAsString())

@@ -18,21 +18,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Style.class)
 public abstract class StyleMixin implements EmoteStyleOwner {
     @Unique private Emote emoteStyle;
-    @Shadow public abstract Style setHoverEvent(@Nullable HoverEvent hoverEvent);
 
-    @Inject(method = {
-            "withColor(Lnet/minecraft/text/TextColor;)Lnet/minecraft/text/Style;",
-            "withBold",
-            "withItalic",
-            "withClickEvent",
-            "setHoverEvent",
-            "withInsertion",
-            "withFont",
-            "withFormatting(Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
-            "withExclusiveFormatting",
-            "withFormatting([Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
-            "withParent"
-    }, at = @At("RETURN"), cancellable = true)
+    @Shadow
+    public abstract Style setHoverEvent(@Nullable HoverEvent hoverEvent);
+
+    @Inject(
+            method = {
+                    "withColor(Lnet/minecraft/text/TextColor;)Lnet/minecraft/text/Style;",
+                    "withBold",
+                    "withItalic",
+                    "withClickEvent",
+                    "setHoverEvent",
+                    "withInsertion",
+                    "withFont",
+                    "withFormatting(Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
+                    "withExclusiveFormatting",
+                    "withFormatting([Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
+                    "withParent"
+            }, at = @At("RETURN"), cancellable = true
+    )
     private void addEmoteStyle(CallbackInfoReturnable<Style> cir) {
         Style result = cir.getReturnValue();
         ((EmoteStyleOwner) result).twitchemotes$setEmoteStyle(this.emoteStyle);

@@ -47,8 +47,7 @@ public class STVEmoteProvider extends EmoteProvider {
                 }
             }
         }
-        return Emote
-                .builder()
+        return Emote.builder()
                 .name(data.get("name").getAsString())
                 .id(data.get("id").getAsString())
                 .url("https:" + host.get("url").getAsString() + "/" + highest + "x.webp")

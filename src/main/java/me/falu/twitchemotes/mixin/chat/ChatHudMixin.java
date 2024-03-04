@@ -22,17 +22,25 @@ import java.util.*;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin implements TwitchMessageListOwner {
+    @Unique private final Map<ChatHudLine, String> messageIds = new HashMap<>();
+    @Unique private final Map<ChatHudLine, String> visibleMessageIds = new HashMap<>();
     @Shadow @Final private List<ChatHudLine> messages;
     @Shadow @Final private List<ChatHudLine> visibleMessages;
-    @Shadow public abstract int getWidth();
-    @Shadow public abstract double getChatScale();
-    @Shadow public abstract boolean isChatFocused();
     @Shadow @Final private MinecraftClient client;
     @Shadow private int scrolledLines;
     @Shadow private boolean hasUnreadNewMessages;
-    @Shadow public abstract void scroll(double amount);
-    @Unique private final Map<ChatHudLine, String> messageIds = new HashMap<>();
-    @Unique private final Map<ChatHudLine, String> visibleMessageIds = new HashMap<>();
+
+    @Shadow
+    public abstract int getWidth();
+
+    @Shadow
+    public abstract double getChatScale();
+
+    @Shadow
+    public abstract boolean isChatFocused();
+
+    @Shadow
+    public abstract void scroll(double amount);
 
     @Unique
     private MutableText transformText(Text prefix, String content, Map<String, Emote> specific) {
@@ -110,7 +118,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     public void twitchemotes$addMessage(Text prefix, String content, String id, Map<String, Emote> specific) {
         MutableText message = this.transformText(prefix, content, specific);
         int timestamp = this.client.inGameHud.getTicks();
-        int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
+        int i = MathHelper.floor((double) this.getWidth() / this.getChatScale());
         List<StringRenderable> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
         boolean bl2 = this.isChatFocused();
         for (StringRenderable stringRenderable2 : list) {

@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface TwitchMessageListOwner {
     void twitchemotes$clear();
+
     void twitchemotes$delete(String id);
+
     void twitchemotes$addMessage(Text prefix, String content, String id, Map<String, Emote> specific);
 }

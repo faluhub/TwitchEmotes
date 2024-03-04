@@ -6,9 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.chat.TwitchListener;
 import me.falu.twitchemotes.config.ConfigValue;
+import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.provider.*;
 import net.fabricmc.api.ClientModInitializer;
@@ -30,10 +30,9 @@ import java.util.*;
 public class TwitchEmotes implements ClientModInitializer {
     public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer("twitchemotes").orElseThrow(RuntimeException::new);
     public static final String MOD_NAME = MOD_CONTAINER.getMetadata().getName();
-    public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final float EMOTE_SIZE = 9.0F;
-
     public static final ConfigValue<String> TWITCH_NAME = new ConfigValue<>("twitch_name", "");
     public static final ConfigValue<String> TWITCH_CHANNEL_NAME = new ConfigValue<>("twitch_channel", "");
     public static final ConfigValue<String> TWITCH_ID = new ConfigValue<>("twitch_id", "");
@@ -41,8 +40,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final ConfigValue<String> TWITCH_AUTH = new ConfigValue<>("twitch_auth", "");
     public static final ConfigValue<Boolean> SHOW_USER_COLORS = new ConfigValue<>("show_user_colors", true);
     public static final ConfigValue<Boolean> SHOW_BADGES = new ConfigValue<>("show_badges", true);
-
-    private static Twirk TWIRK;
+    public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
     private static final EmoteProvider[] EMOTE_PROVIDERS = new EmoteProvider[] {
             new BTTVEmoteProvider(),
             new FFZEmoteProvider(),
@@ -51,7 +49,7 @@ public class TwitchEmotes implements ClientModInitializer {
     };
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
     private static final Map<String, Badge> BADGE_MAP = new HashMap<>();
-    public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
+    private static Twirk TWIRK;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
@@ -63,7 +61,7 @@ public class TwitchEmotes implements ClientModInitializer {
 
     private static boolean validStrings(String... strings) {
         for (String string : strings) {
-            if (string == null || string.trim().equals("")) {
+            if (string == null || string.trim().isEmpty()) {
                 return false;
             }
         }
@@ -71,7 +69,9 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     public static Emote getEmote(String name, Map<String, Emote> specific) {
-        if (EMOTE_MAP.containsKey(name)) { return EMOTE_MAP.get(name); }
+        if (EMOTE_MAP.containsKey(name)) {
+            return EMOTE_MAP.get(name);
+        }
         return specific.get(name);
     }
 

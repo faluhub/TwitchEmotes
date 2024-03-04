@@ -15,6 +15,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,14 @@ public class TwitchListener implements TwirkListener {
 
     @Override
     public void onPrivMsg(TwitchUser sender, TwitchMessage message) {
+        if (message.getContent().equals("!refreshoverlay")) {
+            TwitchEmotes.reloadEmotes();
+            try {
+                MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(new LiteralText("Reloaded emotes").formatted(Formatting.GRAY, Formatting.ITALIC));
+            } catch (Exception ignored) {
+            }
+            return;
+        }
         MutableText prefix = new LiteralText("");
         if (TwitchEmotes.SHOW_BADGES.getValue()) {
             for (String badgeId : sender.getBadges()) {

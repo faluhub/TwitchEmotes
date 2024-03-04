@@ -23,8 +23,7 @@ public class Emote {
     public final EmoteTextureHandler textureHandler = new EmoteTextureHandler(this);
 
     public boolean scheduleDraw(float x, float y, Matrix4f matrix, float alpha) {
-        NativeImage img = this.textureHandler.getImage();
-        if (img != null || this.textureHandler.loading) {
+        if (this.textureHandler.getImage() != null || this.textureHandler.loading) {
             return TwitchEmotes.SCHEDULED_DRAW.add(new DrawData(this, x, y, matrix, alpha));
         }
         return false;
@@ -36,7 +35,7 @@ public class Emote {
     }
 
     @SuppressWarnings("deprecation")
-    private void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
+    public void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
         int glId = this.textureHandler.getGlId();
         if (glId == -1) {
             return;

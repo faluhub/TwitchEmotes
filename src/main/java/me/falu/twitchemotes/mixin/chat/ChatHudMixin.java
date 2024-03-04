@@ -32,13 +32,10 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @Shadow
     public abstract int getWidth();
-
     @Shadow
     public abstract double getChatScale();
-
     @Shadow
     public abstract boolean isChatFocused();
-
     @Shadow
     public abstract void scroll(double amount);
 

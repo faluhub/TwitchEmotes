@@ -10,7 +10,10 @@
 
     "render.ShadowDrawerMixin",
     "render.StyleMixin",
-    "render.TextRendererMixin"
+    "render.TextRendererMixin",
+
+    "MinecraftClientMixin",
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

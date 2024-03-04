@@ -50,6 +50,7 @@ public class TwitchEmotes implements ClientModInitializer {
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
     private static final Map<String, Badge> BADGE_MAP = new HashMap<>();
     private static Twirk TWIRK;
+    private static String CACHED_TWITCH_ID = null;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
@@ -109,6 +110,9 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     private static String getTwitchId() {
+        if (CACHED_TWITCH_ID != null) {
+            return CACHED_TWITCH_ID;
+        }
         String user = TWITCH_NAME.getValue();
         String channel = TWITCH_CHANNEL_NAME.getValue();
         if (!channel.isEmpty() && !user.equals(channel)) {
@@ -120,7 +124,7 @@ public class TwitchEmotes implements ClientModInitializer {
                     if (results.size() > 0) {
                         JsonObject data = results.get(0).getAsJsonObject();
                         if (data.get("login").getAsString().equalsIgnoreCase(channel)) {
-                            return data.get("id").getAsString();
+                            return CACHED_TWITCH_ID = data.get("id").getAsString();
                         }
                     }
                 }
@@ -129,12 +133,10 @@ public class TwitchEmotes implements ClientModInitializer {
         return TWITCH_ID.getValue();
     }
 
-    public static void reload() {
-        String name = TWITCH_NAME.getValue();
+    public static void reloadEmotes() {
         String id = getTwitchId();
-        String clientId = TWITCH_CLIENT_ID.getValue();
         String auth = TWITCH_AUTH.getValue();
-        String channel = TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TWITCH_CHANNEL_NAME.getValue();
+        String clientId = TWITCH_CLIENT_ID.getValue();
 
         if (validStrings(id, auth, clientId)) {
             EMOTE_MAP.clear();
@@ -150,6 +152,14 @@ public class TwitchEmotes implements ClientModInitializer {
         } else {
             LOGGER.warn("No Twitch user ID provided. Skipping loading emotes.");
         }
+    }
+
+    public static void reload() {
+        String name = TWITCH_NAME.getValue();
+        String auth = TWITCH_AUTH.getValue();
+        String channel = TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TWITCH_CHANNEL_NAME.getValue();
+
+        reloadEmotes();
 
         if (validStrings(channel, name, auth)) {
             if (TWIRK != null) {

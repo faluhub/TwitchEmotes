@@ -1,9 +1,8 @@
-package me.falu.twitchemotes.mixin.chat;
+package me.falu.twitchemotes.mixin;
 
-import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.gui.screen.MenuSelectionScreen;
-import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -15,20 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ChatScreen.class)
-public abstract class ChatScreenMixin extends Screen {
+@Mixin(TitleScreen.class)
+public abstract class TitleScreenMixin extends Screen {
     @Unique private static final Identifier BUTTON_ICON = new Identifier("textures/item/feather.png");
 
-    protected ChatScreenMixin(Text title) {
+    protected TitleScreenMixin(Text title) {
         super(title);
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        if (!message.startsWith("/")) {
-            TwitchEmotes.sendChatMessage(message);
-        }
-        super.sendMessage(message);
     }
 
     @Inject(method = "init", at = @At("TAIL"))

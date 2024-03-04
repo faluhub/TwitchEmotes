@@ -16,6 +16,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
         super(x, y, width, height, message, onPress);
     }
 
+    @SuppressWarnings("unused")
     public LimitlessButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, TooltipSupplier tooltipSupplier) {
         super(x, y, width, height, message, onPress, tooltipSupplier);
     }
@@ -24,6 +25,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
     @SuppressWarnings("deprecation")
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
+        RenderSystem.pushMatrix();
         client.getTextureManager().bindTexture(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
         int yOffset = this.getYImage(this.isHovered());
@@ -41,7 +43,17 @@ public class LimitlessButtonWidget extends ButtonWidget {
         fill(matrices, this.x + 3, this.y + 3, this.x + this.width - 3, this.y + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 
         int color = this.active ? 0xFFFFFF : 0xA0A0A0;
-        this.drawCenteredText(matrices, client.textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, color | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        float scale = 1.3F;
+        RenderSystem.scalef(scale, scale, 1.0F);
+        this.drawCenteredText(
+                matrices,
+                client.textRenderer,
+                this.getMessage(),
+                (int) ((this.x + this.width / 2) / scale),
+                (int) ((this.y + this.height - (this.height + client.textRenderer.fontHeight) / 4) / scale),
+                color | MathHelper.ceil(this.alpha * 255.0F) << 24
+        );
+        RenderSystem.popMatrix();
 
         if (this.isHovered() && this.active) {
             this.renderToolTip(matrices, mouseX, mouseY);

@@ -9,7 +9,6 @@ import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.math.Matrix4f;
 
 @Builder
@@ -93,8 +92,8 @@ public class Emote {
         }
     }
 
-    @RequiredArgsConstructor
     @ToString
+    @RequiredArgsConstructor
     public static class DrawData {
         public final Emote emote;
         public final float x;

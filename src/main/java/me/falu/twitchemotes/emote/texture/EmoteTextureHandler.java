@@ -36,14 +36,6 @@ public class EmoteTextureHandler {
         return (TwitchEmotes.EMOTE_SIZE * img.getWidth()) / img.getHeight();
     }
 
-    public long getTotalDuration() {
-        long duration = 0;
-        for (EmoteBackedTexture texture : this.textures) {
-            duration += texture.duration;
-        }
-        return duration;
-    }
-
     public NativeImage getImage() {
         if (this.textures.isEmpty() && !this.loading) {
             new Thread(() -> {

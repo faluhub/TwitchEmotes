@@ -7,7 +7,6 @@ import com.google.gson.JsonPrimitive;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class TwitchEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.twitch.tv/helix/chat/emotes";
     // id, format, theme, scale

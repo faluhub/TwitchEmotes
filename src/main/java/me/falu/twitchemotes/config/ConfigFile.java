@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class ConfigFile {
     private static File FILE = FabricLoader.getInstance().getConfigDir().resolve(TwitchEmotes.MOD_NAME + "_v3.json").toFile();
 

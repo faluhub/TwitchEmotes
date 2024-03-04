@@ -40,6 +40,7 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final ConfigValue<String> TWITCH_AUTH = new ConfigValue<>("twitch_auth", "");
     public static final ConfigValue<Boolean> SHOW_USER_COLORS = new ConfigValue<>("show_user_colors", true);
     public static final ConfigValue<Boolean> SHOW_BADGES = new ConfigValue<>("show_badges", true);
+    public static final ConfigValue<Boolean> SHOW_PP_HOP_OVERLAY = new ConfigValue<>("show_pp_hop_overlay", true);
     public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
     private static final EmoteProvider[] EMOTE_PROVIDERS = new EmoteProvider[] {
             new BTTVEmoteProvider(),

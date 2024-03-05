@@ -11,13 +11,20 @@ A Fabric mod that brings [Twitch](https://twitch.tv)'s emojis, [7TV](https://7tv
 
 If you want the mod to be ported to a specific version, open an issue or ask me in [my Discord server](https://discord.gg/s9m8gf6pju)!
 
-Config menu selection:
+**Config menu selection:**
+
 <img width="480" height="270" src="assets/config_menu_selection.png" alt="Config menu selection">
-Credentials config menu:
+
+**Credentials config menu:**
+
 <img width="480" height="270" src="./assets/credentials.png" alt="Credentials config">
-Other config menu:
+
+**Other config menu:**
+
 <img width="480" height="270" src="./assets/other.png" alt="Other config">
-In game:
+
+**In game:**
+
 <img width="480" height="270" src="assets/in_game.png" alt="In game">
 
 ## Features:

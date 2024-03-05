@@ -1,13 +1,13 @@
 package me.falu.twitchemotes.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -15,17 +15,17 @@ import net.minecraft.util.math.MathHelper;
 public class LimitlessButtonWidget extends ButtonWidget {
     private static final int BG_COLOR = BackgroundHelper.ColorMixer.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
-    private final ButtonEmote drawData;
+    private final Emote emote;
 
-    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, ButtonEmote drawData, PressAction onPress) {
+    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress) {
         super(x, y, width, height, message, onPress);
-        this.drawData = drawData;
+        this.emote = emote;
     }
 
     @SuppressWarnings("unused")
-    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, ButtonEmote drawData, PressAction onPress, TooltipSupplier tooltipSupplier) {
+    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress, TooltipSupplier tooltipSupplier) {
         super(x, y, width, height, message, onPress, tooltipSupplier);
-        this.drawData = drawData;
+        this.emote = emote;
     }
 
     @Override
@@ -50,8 +50,8 @@ public class LimitlessButtonWidget extends ButtonWidget {
         fill(matrices, this.x + 3, this.y + 3, this.x + this.width - 3, this.y + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 
         int color = this.active ? 0xFFFFFF : 0xA0A0A0;
-        float textScale = this.drawData != null ? 1.3F : 1.0F;
-        int textY = this.drawData != null
+        float textScale = this.emote != null ? 1.3F : 1.0F;
+        int textY = this.emote != null
                     ? this.y + this.height - (this.height + client.textRenderer.fontHeight) / 4
                     : this.y + (this.height - 8) / 2;
         RenderSystem.scalef(textScale, textScale, 1.0F);
@@ -64,16 +64,19 @@ public class LimitlessButtonWidget extends ButtonWidget {
                 color | MathHelper.ceil(this.alpha * 255.0F) << 24
         );
         RenderSystem.popMatrix();
-        if (this.drawData != null) {
+        if (this.emote != null) {
             RenderSystem.pushMatrix();
-            float emoteScale = 6.0F;
+            // 6.0F scale looked good on the big vertical buttons, so I just tested what that would've been on the size of the button
+            float emoteScale = this.height / 27.0F;
             RenderSystem.scalef(emoteScale, emoteScale, 1.0F);
-            EmoteTextureHandler textureHandler = this.drawData.emote.textureHandler;
-            if (textureHandler.getImage() != null || textureHandler.loading) {
-                this.drawData.emote.createTextureBuffer(
+            RenderSystem.color4f(0.0F, 0.0F, 0.0F, 0.5F);
+            EmoteTextureHandler textureHandler = this.emote.textureHandler;
+            NativeImage image = textureHandler.getImage();
+            if (image != null) {
+                this.emote.createTextureBuffer(
                         matrices.peek().getModel(),
-                        this.drawData.x / emoteScale - textureHandler.getWidth() / 2.0F,
-                        this.drawData.y / emoteScale,
+                        (this.x + this.width / 2.0F) / emoteScale - textureHandler.getWidth() / 2.0F,
+                        this.y / emoteScale + TwitchEmotes.EMOTE_SIZE / 2.0F,
                         1.0F
                 );
                 textureHandler.postRender();
@@ -84,13 +87,5 @@ public class LimitlessButtonWidget extends ButtonWidget {
         if (this.isHovered() && this.active) {
             this.renderToolTip(matrices, mouseX, mouseY);
         }
-    }
-
-    @ToString
-    @RequiredArgsConstructor
-    public static class ButtonEmote {
-        private final Emote emote;
-        public final float x;
-        public final float y;
     }
 }

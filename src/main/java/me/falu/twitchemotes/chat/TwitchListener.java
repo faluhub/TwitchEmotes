@@ -7,6 +7,7 @@ import com.gikk.twirk.types.clearMsg.ClearMsg;
 import com.gikk.twirk.types.twitchMessage.TwitchMessage;
 import com.gikk.twirk.types.users.TwitchUser;
 import me.falu.twitchemotes.TwitchEmotes;
+import me.falu.twitchemotes.TwitchEmotesOptions;
 import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
@@ -57,7 +58,7 @@ public class TwitchListener implements TwirkListener {
             return;
         }
         MutableText prefix = new LiteralText("");
-        if (TwitchEmotes.SHOW_BADGES.getValue()) {
+        if (TwitchEmotesOptions.SHOW_BADGES.getValue()) {
             for (String badgeId : sender.getBadges()) {
                 Badge badge = TwitchEmotes.getBadge(badgeId.split("/")[0]);
                 if (badge != null) {
@@ -70,7 +71,7 @@ public class TwitchListener implements TwirkListener {
         }
         prefix.append("<");
         prefix.append(new LiteralText(sender.getDisplayName()).styled(style -> {
-            if (TwitchEmotes.SHOW_USER_COLORS.getValue()) {
+            if (TwitchEmotesOptions.SHOW_USER_COLORS.getValue()) {
                 style = style.withColor(TextColor.fromRgb(sender.getColor()));
             }
             return style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://twitch.tv/" + sender.getUserName()));
@@ -97,10 +98,12 @@ public class TwitchListener implements TwirkListener {
     @Override
     public void onConnect() {
         TwitchEmotes.log("Connected to Twitch chat.");
+        TwitchEmotes.CHAT_CONNECTED = true;
     }
 
     @Override
     public void onDisconnect() {
         TwitchEmotes.LOGGER.error("Disconnected from Twitch chat.");
+        TwitchEmotes.CHAT_CONNECTED = false;
     }
 }

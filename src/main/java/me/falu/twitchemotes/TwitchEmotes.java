@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.falu.twitchemotes.chat.TwitchListener;
-import me.falu.twitchemotes.config.ConfigValue;
 import me.falu.twitchemotes.emote.Badge;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.provider.*;
@@ -33,14 +32,6 @@ public class TwitchEmotes implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final String MOD_VERSION = String.valueOf(MOD_CONTAINER.getMetadata().getVersion());
     public static final float EMOTE_SIZE = 9.0F;
-    public static final ConfigValue<String> TWITCH_NAME = new ConfigValue<>("twitch_name", "");
-    public static final ConfigValue<String> TWITCH_CHANNEL_NAME = new ConfigValue<>("twitch_channel", "");
-    public static final ConfigValue<String> TWITCH_ID = new ConfigValue<>("twitch_id", "");
-    public static final ConfigValue<String> TWITCH_CLIENT_ID = new ConfigValue<>("twitch_client_id", "");
-    public static final ConfigValue<String> TWITCH_AUTH = new ConfigValue<>("twitch_auth", "");
-    public static final ConfigValue<Boolean> SHOW_USER_COLORS = new ConfigValue<>("show_user_colors", true);
-    public static final ConfigValue<Boolean> SHOW_BADGES = new ConfigValue<>("show_badges", true);
-    public static final ConfigValue<Boolean> SHOW_PP_HOP_OVERLAY = new ConfigValue<>("show_pp_hop_overlay", true);
     public static final Queue<Emote.DrawData> SCHEDULED_DRAW = new ArrayDeque<>();
     private static final EmoteProvider[] EMOTE_PROVIDERS = new EmoteProvider[] {
             new BTTVEmoteProvider(),
@@ -51,7 +42,7 @@ public class TwitchEmotes implements ClientModInitializer {
     private static final Map<String, Emote> EMOTE_MAP = new HashMap<>();
     private static final Map<String, Badge> BADGE_MAP = new HashMap<>();
     private static Twirk TWIRK;
-    private static String CACHED_TWITCH_ID = null;
+    public static boolean CHAT_CONNECTED = false;
 
     public static void log(Object msg) {
         LOGGER.log(Level.INFO, msg);
@@ -98,8 +89,8 @@ public class TwitchEmotes implements ClientModInitializer {
             URL url = new URL(endpoint);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.addRequestProperty("Authorization", "Bearer " + TWITCH_AUTH.getValue());
-            connection.addRequestProperty("Client-Id", TWITCH_CLIENT_ID.getValue());
+            connection.addRequestProperty("Authorization", "Bearer " + TwitchEmotesOptions.TWITCH_AUTH.getValue());
+            connection.addRequestProperty("Client-Id", TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue());
             connection.setUseCaches(false);
             InputStream inputStream = connection.getInputStream();
             String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
@@ -111,11 +102,8 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     private static String getTwitchId() {
-        if (CACHED_TWITCH_ID != null) {
-            return CACHED_TWITCH_ID;
-        }
-        String user = TWITCH_NAME.getValue();
-        String channel = TWITCH_CHANNEL_NAME.getValue();
+        String user = TwitchEmotesOptions.TWITCH_NAME.getValue();
+        String channel = TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue();
         if (!channel.isEmpty() && !user.equals(channel)) {
             JsonElement response = getJsonAuthResponse("https://api.twitch.tv/helix/users?login=" + channel);
             if (response != null && !response.isJsonNull() && response.isJsonObject()) {
@@ -125,19 +113,19 @@ public class TwitchEmotes implements ClientModInitializer {
                     if (results.size() > 0) {
                         JsonObject data = results.get(0).getAsJsonObject();
                         if (data.get("login").getAsString().equalsIgnoreCase(channel)) {
-                            return CACHED_TWITCH_ID = data.get("id").getAsString();
+                            return data.get("id").getAsString();
                         }
                     }
                 }
             }
         }
-        return TWITCH_ID.getValue();
+        return TwitchEmotesOptions.TWITCH_ID.getValue();
     }
 
     public static void reloadEmotes() {
         String id = getTwitchId();
-        String auth = TWITCH_AUTH.getValue();
-        String clientId = TWITCH_CLIENT_ID.getValue();
+        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
+        String clientId = TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue();
 
         if (validStrings(id, auth, clientId)) {
             EMOTE_MAP.clear();
@@ -155,12 +143,10 @@ public class TwitchEmotes implements ClientModInitializer {
         }
     }
 
-    public static void reload() {
-        String name = TWITCH_NAME.getValue();
-        String auth = TWITCH_AUTH.getValue();
-        String channel = TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TWITCH_CHANNEL_NAME.getValue();
-
-        reloadEmotes();
+    public static void reloadChat() {
+        String name = TwitchEmotesOptions.TWITCH_NAME.getValue();
+        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
+        String channel = TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue();
 
         if (validStrings(channel, name, auth)) {
             if (TWIRK != null) {
@@ -185,6 +171,11 @@ public class TwitchEmotes implements ClientModInitializer {
         } else {
             LOGGER.warn("Invalid Twitch credentials provided. Skipping connecting to chat.");
         }
+    }
+
+    public static void reload() {
+        reloadEmotes();
+        reloadChat();
     }
 
     @Override

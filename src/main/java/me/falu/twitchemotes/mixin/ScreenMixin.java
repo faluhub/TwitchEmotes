@@ -1,6 +1,6 @@
 package me.falu.twitchemotes.mixin;
 
-import me.falu.twitchemotes.TwitchEmotes;
+import me.falu.twitchemotes.TwitchEmotesOptions;
 import me.falu.twitchemotes.gui.overlay.PpHopOverlay;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,7 +19,7 @@ public class ScreenMixin {
 
     @Inject(method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;I)V", at = @At("TAIL"))
     private void renderPpOverlay(MatrixStack matrices, int vOffset, CallbackInfo ci) {
-        if (TwitchEmotes.SHOW_PP_HOP_OVERLAY.getValue()) {
+        if (TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY.getValue()) {
             PP_HOP_OVERLAY.render(matrices, this.width, this.height);
         }
     }

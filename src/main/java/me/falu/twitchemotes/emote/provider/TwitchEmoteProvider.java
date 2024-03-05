@@ -1,10 +1,12 @@
 package me.falu.twitchemotes.emote.provider;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class TwitchEmoteProvider extends EmoteProvider {
     private static final String BASE_URL = "https://api.twitch.tv/helix/chat/emotes";
     // id, format, theme, scale
@@ -45,8 +47,7 @@ public class TwitchEmoteProvider extends EmoteProvider {
                 highest = size;
             }
         }
-        return Emote
-                .builder()
+        return Emote.builder()
                 .name(data.get("name").getAsString())
                 .id(id)
                 .url(String.format(IMAGE_URL_TEMPLATE, id, isAnimated ? "animated" : "static", "dark", highest))

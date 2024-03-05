@@ -4,7 +4,9 @@
   "version": "${version}",
   "name": "TwitchEmotes",
   "description": "Adds emotes from FFZ, BTTV and 7TV to Minecraft chat.",
-  "authors": ["falu"],
+  "authors": [
+    "falu"
+  ],
   "contact": {
     "homepage": "https://github.com/faluhub/TwitchEmotes"
   },
@@ -15,7 +17,9 @@
       "me.falu.twitchemotes.TwitchEmotes"
     ]
   },
-  "mixins": ["twitchemotes.mixins.json"],
+  "mixins": [
+    "twitchemotes.mixins.json"
+  ],
   "accessWidener": "twitchemotes.accesswidener",
   "depends": {
     "minecraft": ">=1.19.3",

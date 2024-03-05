@@ -7,7 +7,6 @@ import lombok.ToString;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.NativeImage;
 import org.joml.Matrix4f;
 
 @Builder
@@ -21,8 +20,7 @@ public class Emote {
     public final EmoteTextureHandler textureHandler = new EmoteTextureHandler(this);
 
     public boolean scheduleDraw(float x, float y, Matrix4f matrix, float alpha) {
-        NativeImage img = this.textureHandler.getImage();
-        if (img != null || this.textureHandler.loading) {
+        if (this.textureHandler.getImage() != null || this.textureHandler.loading) {
             return TwitchEmotes.SCHEDULED_DRAW.add(new DrawData(this, x, y, matrix, alpha));
         }
         return false;
@@ -33,9 +31,11 @@ public class Emote {
         this.textureHandler.postRender();
     }
 
-    private void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
+    public void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
         int glId = this.textureHandler.getGlId();
-        if (glId == -1) { return; }
+        if (glId == -1) {
+            return;
+        }
         RenderSystem.setShaderTexture(0, glId);
         RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
         RenderSystem.enableBlend();
@@ -71,7 +71,6 @@ public class Emote {
         GIF("gif"),
         WEBP("webp"),
         STATIC("png");
-
         public final String suffix;
 
         ImageType(String suffix) {
@@ -88,8 +87,8 @@ public class Emote {
         }
     }
 
-    @RequiredArgsConstructor
     @ToString
+    @RequiredArgsConstructor
     public static class DrawData {
         public final Emote emote;
         public final float x;

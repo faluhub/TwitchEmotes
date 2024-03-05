@@ -25,7 +25,7 @@ public class STVEmoteProvider extends EmoteProvider {
     @Override
     public JsonArray getUserEmotes(String userId) {
         JsonObject user = this.getObjectResponse(BASE_URL + "/users/twitch/" + userId);
-        if (user.has("emote_set")) {
+        if (user.has("emote_set") && !user.get("emote_set").isJsonNull()) {
             JsonObject emoteSet = user.get("emote_set").getAsJsonObject();
             return emoteSet.get("emotes").getAsJsonArray();
         }
@@ -47,8 +47,7 @@ public class STVEmoteProvider extends EmoteProvider {
                 }
             }
         }
-        return Emote
-                .builder()
+        return Emote.builder()
                 .name(data.get("name").getAsString())
                 .id(data.get("id").getAsString())
                 .url("https:" + host.get("url").getAsString() + "/" + highest + "x.webp")

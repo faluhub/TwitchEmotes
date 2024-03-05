@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public abstract class EmoteProvider {
     private JsonElement getJsonResponse(String endpoint) throws IOException {
         URL url = new URL(endpoint);
@@ -51,11 +50,8 @@ public abstract class EmoteProvider {
     }
 
     public abstract String getProviderName();
-
     public abstract JsonArray getGlobalEmotes();
-
     public abstract JsonArray getUserEmotes(String userId);
-
     public abstract Emote createEmote(JsonObject data);
 
     public final List<Emote> collectEmotes(String userId) {

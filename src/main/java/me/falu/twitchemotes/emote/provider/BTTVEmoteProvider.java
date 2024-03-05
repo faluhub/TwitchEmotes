@@ -34,11 +34,10 @@ public class BTTVEmoteProvider extends EmoteProvider {
     @Override
     public Emote createEmote(JsonObject data) {
         String id;
-        return Emote
-                .builder()
+        return Emote.builder()
                 .name(data.get("code").getAsString())
                 .id(id = data.get("id").getAsString())
-                .url(IMG_URL.formatted(id))
+                .url(String.format(IMG_URL, id))
                 .imageType(Emote.ImageType.WEBP)
                 .build();
     }

@@ -2,15 +2,20 @@
   "required": true,
   "minVersion": "0.8",
   "package": "me.falu.twitchemotes.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_9",
   "client": [
     "chat.ChatHudMixin",
     "chat.ChatInputSuggestorMixin",
+    "chat.ChatScreenMixin",
     "chat.ClientPlayNetworkHandlerMixin",
 
     "render.DrawContextMixin",
     "render.DrawerMixin",
-    "render.StyleMixin"
+    "render.StyleMixin",
+
+    "MinecraftClientMixin",
+    "ScreenMixin",
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

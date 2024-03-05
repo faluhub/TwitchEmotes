@@ -1,6 +1,9 @@
 package me.falu.twitchemotes.config;
 
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.falu.twitchemotes.TwitchEmotes;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -9,14 +12,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-@SuppressWarnings("BlockingMethodInNonBlockingContext")
 public class ConfigFile {
     private static File FILE = FabricLoader.getInstance().getConfigDir().resolve(TwitchEmotes.MOD_NAME + "_v3.json").toFile();
 
     public static void init() {
         if (!FILE.exists()) {
-            try { boolean ignored = FILE.createNewFile(); }
-            catch (IOException e) { throw new RuntimeException(e); }
+            try {
+                boolean ignored = FILE.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         JsonObject config = get(false);
         if (config.has("file")) {
@@ -33,14 +38,17 @@ public class ConfigFile {
     }
 
     protected static JsonObject get(boolean initialise) {
-        if (initialise) { init(); }
+        if (initialise) {
+            init();
+        }
         try {
             FileReader reader = new FileReader(FILE);
             Object obj = JsonParser.parseReader(reader);
             reader.close();
 
             return JsonNull.INSTANCE.equals(obj) ? new JsonObject() : (JsonObject) obj;
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return new JsonObject();
     }
 
@@ -51,6 +59,7 @@ public class ConfigFile {
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(config));
             writer.flush();
             writer.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 }

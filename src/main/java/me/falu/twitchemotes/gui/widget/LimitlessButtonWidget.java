@@ -1,7 +1,6 @@
 package me.falu.twitchemotes.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import lombok.Setter;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
@@ -17,11 +16,9 @@ public class LimitlessButtonWidget extends ButtonWidget {
     private static final int BG_COLOR = ColorHelper.Argb.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = ColorHelper.Argb.getArgb(80, 0, 0, 0);
     private final Emote emote;
-    @Setter private Text text;
 
     public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress) {
-        super(x, y, width, height, Text.literal(""), onPress, ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
-        this.text = message;
+        super(x, y, width, height, message, onPress, ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.emote = emote;
     }
 
@@ -59,8 +56,8 @@ public class LimitlessButtonWidget extends ButtonWidget {
         drawCenteredTextWithShadow(
                 matrices,
                 client.textRenderer,
-                this.text,
-                (int) ((this.getX() + this.width / 2) / textScale),
+                this.getMessage(),
+                (int) ((this.getX() + this.width / 2.0F) / textScale),
                 (int) (textY / textScale),
                 color | MathHelper.ceil(this.alpha * 255.0F) << 24
         );

@@ -1,6 +1,5 @@
 package me.falu.twitchemotes.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -34,11 +33,10 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.renderButton(matrices, mouseX, mouseY, delta);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(this.textScale, this.textScale, 1.0F);
+        matrices.push();
+        matrices.scale(this.textScale, this.textScale, 1.0F);
         for (int i = 0; i < this.lines.size(); i++) {
             OrderedText line = this.lines.get(i);
             this.textRenderer.drawWithShadow(
@@ -49,7 +47,7 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
                     0xFFFFFF
             );
         }
-        RenderSystem.popMatrix();
+        matrices.pop();
     }
 
     @Override

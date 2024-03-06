@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TextRenderer.Drawer.class)
 public class ShadowDrawerMixin {
-    @Shadow private float x;
-    @Shadow private float y;
+    @Shadow float x;
+    @Shadow float y;
     @Shadow @Final private Matrix4f matrix;
     @Shadow @Final private float alpha;
 
@@ -25,7 +25,7 @@ public class ShadowDrawerMixin {
             method = "accept",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/font/TextRenderer;method_27518(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V",
+                    target = "Lnet/minecraft/client/font/TextRenderer;drawGlyph(Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V",
                     shift = At.Shift.BEFORE
             ),
             cancellable = true

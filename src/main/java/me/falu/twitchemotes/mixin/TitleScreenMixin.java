@@ -1,5 +1,6 @@
 package me.falu.twitchemotes.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.falu.twitchemotes.gui.screen.MenuSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -24,7 +25,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void addConfigButton(CallbackInfo ci) {
-        this.addButton(new ButtonWidget(0, 0, 20, 20, new LiteralText(""), b -> {
+        this.addDrawableChild(new ButtonWidget(0, 0, 20, 20, new LiteralText(""), b -> {
             if (this.client != null) {
                 this.client.openScreen(new MenuSelectionScreen());
             }
@@ -33,10 +34,10 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (this.client == null) {
-            return;
-        }
-        this.client.getTextureManager().bindTexture(BUTTON_ICON);
+        matrices.push();
+        RenderSystem.setShaderTexture(0, BUTTON_ICON);
+        RenderSystem.enableDepthTest();
         drawTexture(matrices, 2, 2, 0.0F, 0.0F, 16, 16, 16, 16);
+        matrices.pop();
     }
 }

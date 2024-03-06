@@ -27,7 +27,7 @@ public class MenuSelectionScreen extends Screen {
         int yOffset = 16;
         int y = this.height / 2 - buttonHeight / 2 - yOffset;
 
-        this.credentialsButton = this.addButton(new LimitlessButtonWidget(
+        this.credentialsButton = this.addDrawableChild(new LimitlessButtonWidget(
                 this.width / 4 - gap / 2,
                 y,
                 buttonWidth,
@@ -40,7 +40,7 @@ public class MenuSelectionScreen extends Screen {
                     }
                 }
         ));
-        this.otherButton = this.addButton(new LimitlessButtonWidget(
+        this.otherButton = this.addDrawableChild(new LimitlessButtonWidget(
                 this.width / 2 + this.width / 4 - buttonWidth + gap / 2,
                 y,
                 buttonWidth,
@@ -54,7 +54,7 @@ public class MenuSelectionScreen extends Screen {
                 }
         ));
         int closeButtonWidth = (this.otherButton.x + this.otherButton.getWidth()) - this.credentialsButton.x;
-        this.addButton(new LimitlessButtonWidget(
+        this.addDrawableChild(new LimitlessButtonWidget(
                 this.width / 2 - closeButtonWidth / 2,
                 this.height - 20 - 10,
                 closeButtonWidth,

@@ -27,7 +27,7 @@ public class OtherConfigScreen extends Screen {
         int buttonHeight = this.height / 4;
         int textFieldHeight = 26;
 
-        this.channelNameField = this.addChild(new TextFieldWidget(
+        this.channelNameField = this.addDrawableChild(new TextFieldWidget(
                 this.textRenderer,
                 this.width / 2 - wideButtonWidth / 2 + 2,
                 this.height / 2 - buttonHeight - textFieldHeight - gap - 4,
@@ -38,7 +38,7 @@ public class OtherConfigScreen extends Screen {
         this.channelNameField.write(TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue());
         this.channelNameField.setChangedListener(s -> this.changedChannelName = !s.equals(TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue()));
 
-        this.addButton(new LimitlessBooleanButtonWidget(
+        this.addDrawableChild(new LimitlessBooleanButtonWidget(
                 this.width / 2 - smallButtonWidth - gap / 2,
                 this.height / 2 - buttonHeight - gap / 2,
                 smallButtonWidth,
@@ -47,7 +47,7 @@ public class OtherConfigScreen extends Screen {
                 EmoteConstants.PARASOCIAL,
                 TwitchEmotesOptions.SHOW_BADGES
         ));
-        this.addButton(new LimitlessBooleanButtonWidget(
+        this.addDrawableChild(new LimitlessBooleanButtonWidget(
                 this.width / 2 + gap / 2,
                 this.height / 2 - buttonHeight - gap / 2,
                 smallButtonWidth,
@@ -56,7 +56,7 @@ public class OtherConfigScreen extends Screen {
                 EmoteConstants.PEEPO_DJ,
                 TwitchEmotesOptions.SHOW_USER_COLORS
         ));
-        this.addButton(new LimitlessBooleanButtonWidget(
+        this.addDrawableChild(new LimitlessBooleanButtonWidget(
                 this.width / 2 - wideButtonWidth / 2,
                 this.height / 2 + gap / 2,
                 wideButtonWidth,
@@ -66,7 +66,7 @@ public class OtherConfigScreen extends Screen {
                 TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY
         ));
 
-        this.addButton(new LimitlessButtonWidget(
+        this.addDrawableChild(new LimitlessButtonWidget(
                 this.width / 2 - wideButtonWidth / 2,
                 this.height - 20 - 10,
                 wideButtonWidth,
@@ -82,7 +82,6 @@ public class OtherConfigScreen extends Screen {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.channelNameField != null) {
-            this.channelNameField.render(matrices, mouseX, mouseY, delta);
             drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Channel Name (Optional):"), this.channelNameField.x, this.channelNameField.y - 4 - this.textRenderer.fontHeight, 0xFFFFFF);
         }
     }

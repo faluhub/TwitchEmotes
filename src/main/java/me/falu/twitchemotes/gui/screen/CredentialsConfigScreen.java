@@ -30,7 +30,7 @@ public class CredentialsConfigScreen extends Screen {
         int buttonHeight = this.height / 3;
         int x = this.width / 2 - buttonWidth / 2;
 
-        this.hintField = this.addChild(new CosmeticTextFieldWidget(
+        this.hintField = this.addDrawableChild(new CosmeticTextFieldWidget(
                 this.textRenderer,
                 x,
                 buttonHeight / 4,
@@ -42,7 +42,7 @@ public class CredentialsConfigScreen extends Screen {
                                       "- Then you can click the 'Paste Info' button in-game.\n" +
                                       "- TwitchEmotes will use these credentials to listen to chat and query your emotes.");
 
-        this.loginButton = this.addButton(new LimitlessButtonWidget(
+        this.loginButton = this.addDrawableChild(new LimitlessButtonWidget(
                 x,
                 this.hintField.y + this.hintField.getHeight() + 10,
                 buttonWidth,
@@ -59,7 +59,7 @@ public class CredentialsConfigScreen extends Screen {
                     }
                 }
         ));
-        this.pasteButton = this.addButton(new LimitlessButtonWidget(
+        this.pasteButton = this.addDrawableChild(new LimitlessButtonWidget(
                 this.loginButton.x,
                 this.loginButton.y,
                 buttonWidth,
@@ -111,7 +111,7 @@ public class CredentialsConfigScreen extends Screen {
         this.pasteButton.visible = false;
         this.pasteButton.active = false;
 
-        this.addButton(new LimitlessButtonWidget(
+        this.addDrawableChild(new LimitlessButtonWidget(
                 x,
                 this.height - 20 - 10,
                 buttonWidth,
@@ -127,7 +127,6 @@ public class CredentialsConfigScreen extends Screen {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.hintField != null) {
-            this.hintField.render(matrices, mouseX, mouseY, delta);
             drawStringWithShadow(
                     matrices,
                     this.textRenderer,

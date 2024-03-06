@@ -1,6 +1,5 @@
 package me.falu.twitchemotes.gui.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
@@ -27,20 +26,19 @@ public class PpHopOverlay extends DrawableHelper {
         return new Random().nextFloat(3.0F, 16.0F);
     }
 
-    @SuppressWarnings("deprecation")
     public void render(MatrixStack matrices, int width, int height) {
         EmoteTextureHandler textureHandler = EmoteConstants.PP_BOUNCE.textureHandler;
         long diff = Util.getMeasuringTimeMs() - this.sequenceStart;
         float progress = (float) diff / 6000;
 
-        RenderSystem.pushMatrix();
+        matrices.push();
         NativeImage image = textureHandler.getImage();
         if (image != null) {
             if (this.y == -1 || this.lastHeight != height) {
                 this.y = new Random().nextInt(height - (int) TwitchEmotes.EMOTE_SIZE);
                 this.lastHeight = height;
             }
-            RenderSystem.scalef(this.scale, this.scale, 0.0F);
+            matrices.scale(this.scale, this.scale, 0.0F);
             EmoteConstants.PP_BOUNCE.createTextureBuffer(
                     matrices.peek().getModel(),
                     (textureHandler.getWidth() * -2 + (width + textureHandler.getWidth()) * progress) / this.scale,
@@ -49,7 +47,7 @@ public class PpHopOverlay extends DrawableHelper {
             );
             textureHandler.postRender();
         }
-        RenderSystem.popMatrix();
+        matrices.pop();
 
         if (diff >= 6000) {
             this.sequenceStart = Util.getMeasuringTimeMs();

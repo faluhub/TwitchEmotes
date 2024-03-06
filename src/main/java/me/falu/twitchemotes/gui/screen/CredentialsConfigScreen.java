@@ -6,10 +6,10 @@ import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.gui.widget.CosmeticTextFieldWidget;
 import me.falu.twitchemotes.gui.widget.LimitlessButtonWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 import java.util.regex.Pattern;
@@ -21,7 +21,7 @@ public class CredentialsConfigScreen extends Screen {
     private CosmeticTextFieldWidget hintField;
 
     public CredentialsConfigScreen() {
-        super(new LiteralText("Credentials Config"));
+        super(Text.literal("Credentials Config"));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CredentialsConfigScreen extends Screen {
                 this.hintField.y + this.hintField.getHeight() + 10,
                 buttonWidth,
                 buttonHeight,
-                new LiteralText("Login"),
+                Text.literal("Login"),
                 EmoteConstants.HMM,
                 b -> {
                     Util.getOperatingSystem().open("https://chatterino.com/client_login");
@@ -65,7 +65,7 @@ public class CredentialsConfigScreen extends Screen {
                 this.loginButton.y,
                 buttonWidth,
                 buttonHeight,
-                new LiteralText("Paste Info"),
+                Text.literal("Paste Info"),
                 EmoteConstants.OK,
                 b -> {
                     b.active = false;

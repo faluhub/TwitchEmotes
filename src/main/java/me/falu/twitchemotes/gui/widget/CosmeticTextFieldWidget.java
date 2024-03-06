@@ -4,8 +4,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,13 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     private final float textScale = Math.min(1.0F, this.width / 209.0F * 0.8F);
 
     public CosmeticTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height) {
-        super(textRenderer, x + 2, y + 2, width - 4, height - 4, new LiteralText(""));
+        super(textRenderer, x + 2, y + 2, width - 4, height - 4, Text.literal(""));
     }
 
     public void addTextAsLines(String text) {
         String[] parts = text.split("\n");
         for (String part : parts) {
-            this.lines.addAll(this.textRenderer.wrapLines(new LiteralText(part), (int) (this.width / this.textScale)));
+            this.lines.addAll(this.textRenderer.wrapLines(Text.literal(part), (int) (this.width / this.textScale)));
         }
     }
 

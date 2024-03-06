@@ -9,7 +9,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.ChatMessages;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,16 +40,16 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     @Shadow
     protected abstract boolean isChatFocused();
     @Shadow
-    public abstract void scroll(double amount);
+    public abstract void scroll(int scroll);
 
     @Unique
     private MutableText transformText(Text prefix, String content, Map<String, Emote> specific) {
-        return this.transformText(prefix, new LiteralText(content), specific);
+        return this.transformText(prefix, Text.literal(content), specific);
     }
 
     @Unique
     private MutableText transformText(Text prefix, Text content, Map<String, Emote> specific) {
-        MutableText message = prefix.shallowCopy();
+        MutableText message = prefix.copy();
         content.visit((style, string) -> {
             List<String> words = new ArrayList<>();
             StringBuilder split = new StringBuilder();
@@ -61,13 +64,13 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
             for (String word : words) {
                 Emote emote = TwitchEmotes.getEmote(word.trim(), specific);
                 if (emote != null) {
-                    message.append(new LiteralText("_").styled(s -> ((EmoteStyleOwner) style).twitchemotes$withEmoteStyle(emote)));
+                    message.append(Text.literal("_").styled(s -> ((EmoteStyleOwner) style).twitchemotes$withEmoteStyle(emote)));
                     String deleted = word.replace(word.trim(), "");
                     if (!deleted.isEmpty()) {
-                        message.append(new LiteralText(deleted).setStyle(style));
+                        message.append(Text.literal(deleted).setStyle(style));
                     }
                 } else {
-                    message.append(new LiteralText(word).setStyle(style));
+                    message.append(Text.literal(word).setStyle(style));
                 }
             }
             return Optional.empty();
@@ -121,7 +124,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
         for (OrderedText stringRenderable2 : list) {
             if (bl2 && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
-                this.scroll(1.0D);
+                this.scroll(1);
             }
             ChatHudLine<OrderedText> visibleLine = new ChatHudLine<>(timestamp, stringRenderable2, 0);
             this.visibleMessageIds.put(visibleLine, id);
@@ -140,6 +143,6 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private Text transformMessageText(Text text) {
-        return this.transformText(new LiteralText(""), text, Maps.newHashMap());
+        return this.transformText(Text.literal(""), text, Maps.newHashMap());
     }
 }

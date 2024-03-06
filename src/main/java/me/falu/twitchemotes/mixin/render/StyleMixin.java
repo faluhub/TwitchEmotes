@@ -5,8 +5,8 @@ import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,14 +45,14 @@ public abstract class StyleMixin implements EmoteStyleOwner {
 
     @Override
     public Style twitchemotes$withEmoteStyle(Emote emoteStyle) {
-        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(emoteStyle.name)));
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(emoteStyle.name)));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emoteStyle);
         return style;
     }
 
     @Override
     public Style twitchemotes$withBadgeStyle(Badge badgeStyle) {
-        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(badgeStyle.description)));
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(badgeStyle.description)));
         style = style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, badgeStyle.clickUrl));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(badgeStyle);
         return style;

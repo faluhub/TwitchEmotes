@@ -4,11 +4,11 @@ import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.gui.widget.LimitlessButtonWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class MenuSelectionScreen extends Screen {
@@ -16,7 +16,7 @@ public class MenuSelectionScreen extends Screen {
     private ButtonWidget otherButton;
 
     public MenuSelectionScreen() {
-        super(new LiteralText("Menu Selection"));
+        super(Text.literal("Menu Selection"));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class MenuSelectionScreen extends Screen {
                 y,
                 buttonWidth,
                 buttonHeight,
-                new LiteralText("Credentials"),
+                Text.literal("Credentials"),
                 EmoteConstants.NERD,
                 b -> {
                     if (this.client != null) {
@@ -45,7 +45,7 @@ public class MenuSelectionScreen extends Screen {
                 y,
                 buttonWidth,
                 buttonHeight,
-                new LiteralText("Other"),
+                Text.literal("Other"),
                 EmoteConstants.CHATTING,
                 b -> {
                     if (this.client != null) {
@@ -70,7 +70,7 @@ public class MenuSelectionScreen extends Screen {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
 
-        MutableText statusText = new LiteralText("Chat: ").append(new LiteralText(TwitchEmotes.CHAT_CONNECTED ? Formatting.GREEN + "Connected" : Formatting.RED + "Disconnected"));
+        MutableText statusText = Text.literal("Chat: ").append(Text.literal(TwitchEmotes.CHAT_CONNECTED ? Formatting.GREEN + "Connected" : Formatting.RED + "Disconnected"));
         drawCenteredText(
                 matrices,
                 this.textRenderer,
@@ -79,7 +79,7 @@ public class MenuSelectionScreen extends Screen {
                 this.height / 2 - this.textRenderer.fontHeight / 2,
                 0xFFFFFF
         );
-        MutableText emotesText = new LiteralText("Emotes: ").append(new LiteralText("" + TwitchEmotes.getEmoteKeys().size()).formatted(Formatting.BLUE));
+        MutableText emotesText = Text.literal("Emotes: ").append(Text.literal("" + TwitchEmotes.getEmoteKeys().size()).formatted(Formatting.BLUE));
         drawCenteredText(
                 matrices,
                 this.textRenderer,

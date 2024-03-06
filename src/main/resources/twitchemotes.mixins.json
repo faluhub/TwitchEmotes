@@ -6,6 +6,7 @@
   "client": [
     "chat.ChatHudMixin",
     "chat.ChatScreenMixin",
+    "chat.ClientPlayerEntityMixin",
     "chat.CommandSuggestorMixin",
 
     "render.ShadowDrawerMixin",

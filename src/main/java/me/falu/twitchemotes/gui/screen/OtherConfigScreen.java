@@ -6,17 +6,17 @@ import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.gui.widget.LimitlessBooleanButtonWidget;
 import me.falu.twitchemotes.gui.widget.LimitlessButtonWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
 
 public class OtherConfigScreen extends Screen {
     private TextFieldWidget channelNameField;
     private boolean changedChannelName = false;
 
     public OtherConfigScreen() {
-        super(new LiteralText("Other Config"));
+        super(Text.literal("Other Config"));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class OtherConfigScreen extends Screen {
                 this.height / 2 - buttonHeight - textFieldHeight - gap - 4,
                 wideButtonWidth - 4,
                 textFieldHeight,
-                new LiteralText("")
+                Text.literal("")
         ));
         this.channelNameField.write(TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue());
         this.channelNameField.setChangedListener(s -> this.changedChannelName = !s.equals(TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue()));
@@ -43,7 +43,7 @@ public class OtherConfigScreen extends Screen {
                 this.height / 2 - buttonHeight - gap / 2,
                 smallButtonWidth,
                 buttonHeight,
-                new LiteralText("Show Badges"),
+                Text.literal("Show Badges"),
                 EmoteConstants.PARASOCIAL,
                 TwitchEmotesOptions.SHOW_BADGES
         ));
@@ -52,7 +52,7 @@ public class OtherConfigScreen extends Screen {
                 this.height / 2 - buttonHeight - gap / 2,
                 smallButtonWidth,
                 buttonHeight,
-                new LiteralText("Show Colors"),
+                Text.literal("Show Colors"),
                 EmoteConstants.PEEPO_DJ,
                 TwitchEmotesOptions.SHOW_USER_COLORS
         ));
@@ -61,7 +61,7 @@ public class OtherConfigScreen extends Screen {
                 this.height / 2 + gap / 2,
                 wideButtonWidth,
                 buttonHeight,
-                new LiteralText("Show ppHop Overlay"),
+                Text.literal("Show ppHop Overlay"),
                 EmoteConstants.PP_HOP,
                 TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY
         ));
@@ -82,7 +82,7 @@ public class OtherConfigScreen extends Screen {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.channelNameField != null) {
-            drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Channel Name (Optional):"), this.channelNameField.x, this.channelNameField.y - 4 - this.textRenderer.fontHeight, 0xFFFFFF);
+            drawTextWithShadow(matrices, this.textRenderer, Text.literal("Channel Name (Optional):"), this.channelNameField.x, this.channelNameField.y - 4 - this.textRenderer.fontHeight, 0xFFFFFF);
         }
     }
 

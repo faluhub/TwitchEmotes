@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +24,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void addConfigButton(CallbackInfo ci) {
-        this.addDrawableChild(new ButtonWidget(0, 0, 20, 20, new LiteralText(""), b -> {
+        this.addDrawableChild(new ButtonWidget(0, 0, 20, 20, Text.literal(""), b -> {
             if (this.client != null) {
                 this.client.setScreen(new MenuSelectionScreen());
             }

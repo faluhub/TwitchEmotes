@@ -13,8 +13,8 @@ import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
@@ -52,17 +52,17 @@ public class TwitchListener implements TwirkListener {
         if (message.getContent().equals("!refreshoverlay")) {
             TwitchEmotes.reloadEmotes();
             try {
-                MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(new LiteralText("Reloaded emotes").formatted(Formatting.GRAY, Formatting.ITALIC));
+                MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal("Reloaded emotes").formatted(Formatting.GRAY, Formatting.ITALIC));
             } catch (Exception ignored) {
             }
             return;
         }
-        MutableText prefix = new LiteralText("");
+        MutableText prefix = Text.literal("");
         if (TwitchEmotesOptions.SHOW_BADGES.getValue()) {
             for (String badgeId : sender.getBadges()) {
                 Badge badge = TwitchEmotes.getBadge(badgeId.split("/")[0]);
                 if (badge != null) {
-                    prefix.append(new LiteralText("_").styled(s -> ((EmoteStyleOwner) s).twitchemotes$withBadgeStyle(badge)));
+                    prefix.append(Text.literal("_").styled(s -> ((EmoteStyleOwner) s).twitchemotes$withBadgeStyle(badge)));
                 }
             }
             if (sender.getBadges().length > 0) {
@@ -70,7 +70,7 @@ public class TwitchListener implements TwirkListener {
             }
         }
         prefix.append("<");
-        prefix.append(new LiteralText(sender.getDisplayName()).styled(style -> {
+        prefix.append(Text.literal(sender.getDisplayName()).styled(style -> {
             if (TwitchEmotesOptions.SHOW_USER_COLORS.getValue()) {
                 style = style.withColor(TextColor.fromRgb(sender.getColor()));
             }

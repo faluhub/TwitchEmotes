@@ -33,7 +33,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         RenderSystem.pushMatrix();
-        client.getTextureManager().bindTexture(WIDGETS_LOCATION);
+        client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
         int yOffset = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();

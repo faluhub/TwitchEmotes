@@ -71,7 +71,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
             NativeImage image = textureHandler.getImage();
             if (image != null) {
                 this.emote.createTextureBuffer(
-                        matrices.peek().getModel(),
+                        matrices.peek().getPositionMatrix(),
                         (this.x + this.width / 2.0F) / emoteScale - textureHandler.getWidth() / 2.0F,
                         this.y / emoteScale + TwitchEmotes.EMOTE_SIZE / 2.0F,
                         1.0F

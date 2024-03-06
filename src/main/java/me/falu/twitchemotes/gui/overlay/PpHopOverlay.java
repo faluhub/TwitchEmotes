@@ -40,7 +40,7 @@ public class PpHopOverlay extends DrawableHelper {
             }
             matrices.scale(this.scale, this.scale, 0.0F);
             EmoteConstants.PP_BOUNCE.createTextureBuffer(
-                    matrices.peek().getModel(),
+                    matrices.peek().getPositionMatrix(),
                     (textureHandler.getWidth() * -2 + (width + textureHandler.getWidth()) * progress) / this.scale,
                     this.y / this.scale,
                     0.5F

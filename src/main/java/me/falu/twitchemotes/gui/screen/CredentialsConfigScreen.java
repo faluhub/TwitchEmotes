@@ -119,7 +119,7 @@ public class CredentialsConfigScreen extends Screen {
                 20,
                 ScreenTexts.DONE,
                 null,
-                b -> this.onClose()
+                b -> this.close()
         ));
     }
 
@@ -140,7 +140,7 @@ public class CredentialsConfigScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         if (this.client != null) {
             this.client.setScreen(new MenuSelectionScreen());
         }

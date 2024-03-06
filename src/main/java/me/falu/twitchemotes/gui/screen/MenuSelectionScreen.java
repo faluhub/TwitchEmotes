@@ -61,7 +61,7 @@ public class MenuSelectionScreen extends Screen {
                 20,
                 ScreenTexts.DONE,
                 null,
-                b -> this.onClose()
+                b -> this.close()
         ));
     }
 

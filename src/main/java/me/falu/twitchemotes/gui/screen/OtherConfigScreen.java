@@ -73,7 +73,7 @@ public class OtherConfigScreen extends Screen {
                 20,
                 ScreenTexts.DONE,
                 null,
-                b -> this.onClose()
+                b -> this.close()
         ));
     }
 
@@ -87,7 +87,7 @@ public class OtherConfigScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         if (this.changedChannelName) {
             TwitchEmotesOptions.TWITCH_CHANNEL_NAME.setValue(this.channelNameField.getText());
             TwitchEmotes.reload();

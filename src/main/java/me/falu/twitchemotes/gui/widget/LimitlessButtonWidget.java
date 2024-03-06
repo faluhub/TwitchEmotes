@@ -34,8 +34,10 @@ public class LimitlessButtonWidget extends ButtonWidget {
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         MatrixStack matrices = context.getMatrices();
+
         matrices.push();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+
         Identifier texture = TEXTURES.get(this.active, this.isSelected());
 
         context.drawTexture(texture, this.getX(), this.getY(), 0, 0, 3, 3, 200, 20);
@@ -59,7 +61,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
         context.drawCenteredTextWithShadow(
                 client.textRenderer,
                 this.getMessage(),
-                (int) ((this.getX() + this.width / 2) / textScale),
+                (int) ((this.getX() + this.width / 2.0F) / textScale),
                 (int) (textY / textScale),
                 color | MathHelper.ceil(this.alpha * 255.0F) << 24
         );

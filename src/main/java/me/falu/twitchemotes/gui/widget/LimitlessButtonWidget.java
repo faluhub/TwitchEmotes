@@ -38,10 +38,10 @@ public class LimitlessButtonWidget extends ButtonWidget {
 
         int textureY = this.getTextureY();
 
-        drawTexture(matrices, this.getX(), this.getY(), 0, textureY, 3, 3);
-        drawTexture(matrices, this.getX() + this.width - 3, this.getY(), 200 - 3, textureY, 3, 3);
-        drawTexture(matrices, this.getX(), this.getY() + this.height - 3, 0, 20 - 3 + textureY, 3, 3);
-        drawTexture(matrices, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3 + textureY, 3, 3);
+        this.drawTexture(matrices, this.getX(), this.getY(), 0, textureY, 3, 3);
+        this.drawTexture(matrices, this.getX() + this.width - 3, this.getY(), 200 - 3, textureY, 3, 3);
+        this.drawTexture(matrices, this.getX(), this.getY() + this.height - 3, 0, 20 - 3 + textureY, 3, 3);
+        this.drawTexture(matrices, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3 + textureY, 3, 3);
 
         drawTexture(matrices, this.getX() + 3, this.getY(), this.width - 6, 3, 3, textureY, 1, 3, 256, 256);
         drawTexture(matrices, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3 + textureY, 3, 1, 256, 256);
@@ -59,7 +59,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
         drawCenteredTextWithShadow(
                 matrices,
                 client.textRenderer,
-                this.text,
+                this.text.asOrderedText(),
                 (int) ((this.getX() + this.width / 2) / textScale),
                 (int) (textY / textScale),
                 color | MathHelper.ceil(this.alpha * 255.0F) << 24
@@ -86,6 +86,6 @@ public class LimitlessButtonWidget extends ButtonWidget {
     }
 
     private int getTextureY() {
-        return 46 + (!this.active ? 0 : (this.isSelected() ? 2 : 1)) * 20;
+        return 46 + (!this.active ? 0 : (this.isFocused() ? 2 : 1)) * 20;
     }
 }

@@ -74,7 +74,7 @@ public class MenuSelectionScreen extends Screen {
         drawCenteredTextWithShadow(
                 matrices,
                 this.textRenderer,
-                statusText,
+                statusText.asOrderedText(),
                 this.credentialsButton.getX() / 2,
                 this.height / 2 - this.textRenderer.fontHeight / 2,
                 0xFFFFFF
@@ -83,7 +83,7 @@ public class MenuSelectionScreen extends Screen {
         drawCenteredTextWithShadow(
                 matrices,
                 this.textRenderer,
-                emotesText,
+                emotesText.asOrderedText(),
                 this.width - (this.width - (this.otherButton.getX() + this.otherButton.getWidth())) / 2,
                 this.height / 2 - this.textRenderer.fontHeight / 2,
                 0xFFFFFF

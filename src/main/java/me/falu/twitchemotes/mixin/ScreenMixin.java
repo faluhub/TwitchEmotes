@@ -17,8 +17,8 @@ public class ScreenMixin {
     @Shadow public int width;
     @Shadow public int height;
 
-    @Inject(method = "renderBackground", at = @At("TAIL"))
-    private void renderPpOverlay(MatrixStack matrices, CallbackInfo ci) {
+    @Inject(method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;I)V", at = @At("TAIL"))
+    private void renderPpOverlay(MatrixStack matrices, int vOffset, CallbackInfo ci) {
         if (TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY.getValue()) {
             PP_HOP_OVERLAY.render(matrices, this.width, this.height);
         }

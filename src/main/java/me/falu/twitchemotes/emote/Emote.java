@@ -94,6 +94,7 @@ public class Emote {
 
     @ToString
     @RequiredArgsConstructor
+    @SuppressWarnings("ClassCanBeRecord")
     public static class DrawData {
         public final Emote emote;
         public final float x;

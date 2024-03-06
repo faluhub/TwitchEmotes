@@ -27,12 +27,11 @@ public class TextureReader {
     }
 
     public List<EmoteBackedTexture> read() throws IOException, NoSuchFieldException, IllegalAccessException {
-        switch (this.imageType) {
-            default:
-            case STATIC: return this.readStatic();
-            case WEBP: return this.readWebP();
-            case GIF: return this.readGIF();
-        }
+        return switch (this.imageType) {
+            default -> this.readStatic();
+            case WEBP -> this.readWebP();
+            case GIF -> this.readGIF();
+        };
     }
 
     private List<EmoteBackedTexture> readWebP() throws IOException {

@@ -27,7 +27,7 @@ public class ConfigValue<T> {
     public void setValue(T newValue) {
         this.value = newValue;
         JsonObject config = ConfigFile.get();
-        if (!(newValue instanceof List)) {
+        if (!(newValue instanceof List<?> list)) {
             Method addMethod = this.getAddMethod(newValue.getClass(), config);
             if (addMethod != null) {
                 try {
@@ -38,7 +38,6 @@ public class ConfigValue<T> {
             }
         } else {
             JsonArray array = new JsonArray();
-            List<?> list = (List<?>) newValue;
             if (!list.isEmpty()) {
                 Class<?> type = list.get(0).getClass();
                 for (Method method : JsonArray.class.getDeclaredMethods()) {

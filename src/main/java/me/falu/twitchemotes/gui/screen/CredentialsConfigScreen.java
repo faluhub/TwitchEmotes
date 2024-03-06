@@ -37,10 +37,11 @@ public class CredentialsConfigScreen extends Screen {
                 buttonWidth,
                 buttonHeight
         ));
-        this.hintField.addTextAsLines("- Clicking on the 'Login' button will open a website where you will be asked to log in.\n" +
-                                      "- After logging in, click the 'Copy' button on the website.\n" +
-                                      "- Then you can click the 'Paste Info' button in-game.\n" +
-                                      "- TwitchEmotes will use these credentials to listen to chat and query your emotes.");
+        this.hintField.addTextAsLines("""
+                                              - Clicking on the 'Login' button will open a website where you will be asked to log in.
+                                              - After logging in, click the 'Copy' button on the website.
+                                              - Then you can click the 'Paste Info' button in-game.
+                                              - TwitchEmotes will use these credentials to listen to chat and query your emotes.""");
 
         this.loginButton = this.addDrawableChild(new LimitlessButtonWidget(
                 x,

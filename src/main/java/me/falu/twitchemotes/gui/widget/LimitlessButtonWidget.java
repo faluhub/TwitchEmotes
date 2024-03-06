@@ -22,12 +22,6 @@ public class LimitlessButtonWidget extends ButtonWidget {
         this.emote = emote;
     }
 
-    @SuppressWarnings("unused")
-    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress, TooltipSupplier tooltipSupplier) {
-        super(x, y, width, height, message, onPress, tooltipSupplier);
-        this.emote = emote;
-    }
-
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();

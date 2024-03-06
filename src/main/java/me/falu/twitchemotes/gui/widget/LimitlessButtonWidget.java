@@ -5,16 +5,16 @@ import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class LimitlessButtonWidget extends ButtonWidget {
-    private static final int BG_COLOR = BackgroundHelper.ColorMixer.getArgb(150, 0, 0, 0);
-    private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
+    private static final int BG_COLOR = ColorHelper.Argb.getArgb(150, 0, 0, 0);
+    private static final int BG_INACTIVE_COLOR = ColorHelper.Argb.getArgb(80, 0, 0, 0);
     private final Emote emote;
 
     public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress) {

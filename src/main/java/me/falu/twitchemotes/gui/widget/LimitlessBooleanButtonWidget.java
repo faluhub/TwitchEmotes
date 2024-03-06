@@ -8,7 +8,7 @@ public class LimitlessBooleanButtonWidget extends LimitlessButtonWidget {
     public LimitlessBooleanButtonWidget(int x, int y, int width, int height, MutableText key, Emote emote, ConfigValue<Boolean> option) {
         super(x, y, width, height, key.copy().append(": " + getBooleanString(option.getValue())), emote, b -> {
             boolean value = option.getValue();
-            ((LimitlessButtonWidget) b).setText(key.copy().append(": " + getBooleanString(!value)));
+            b.setMessage(key.copy().append(": " + getBooleanString(!value)));
             option.setValue(!value);
         });
     }

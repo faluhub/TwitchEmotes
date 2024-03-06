@@ -32,9 +32,6 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     public void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (this.client == null) {
-            return;
-        }
         context.drawTexture(BUTTON_ICON, 2, 2, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 }

@@ -2,8 +2,8 @@ package me.falu.twitchemotes.mixin;
 
 import me.falu.twitchemotes.TwitchEmotesOptions;
 import me.falu.twitchemotes.gui.overlay.PpHopOverlay;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,9 +18,9 @@ public class ScreenMixin {
     @Shadow public int height;
 
     @Inject(method = "renderBackground", at = @At("TAIL"))
-    private void renderPpOverlay(DrawContext context, CallbackInfo ci) {
+    private void renderPpOverlay(MatrixStack matrices, CallbackInfo ci) {
         if (TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY.getValue()) {
-            PP_HOP_OVERLAY.render(context.getMatrices(), this.width, this.height);
+            PP_HOP_OVERLAY.render(matrices, this.width, this.height);
         }
     }
 }

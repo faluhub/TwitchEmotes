@@ -6,7 +6,6 @@ import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,32 +26,38 @@ public class LimitlessButtonWidget extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
-        MatrixStack matrices = context.getMatrices();
+
         matrices.push();
+        RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+
         int textureY = this.getTextureY();
 
-        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), 0, textureY, 3, 3);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY(), 200 - 3, textureY, 3, 3);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY() + this.height - 3, 0, 20 - 3 + textureY, 3, 3);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3 + textureY, 3, 3);
+        drawTexture(matrices, this.getX(), this.getY(), 0, textureY, 3, 3);
+        drawTexture(matrices, this.getX() + this.width - 3, this.getY(), 200 - 3, textureY, 3, 3);
+        drawTexture(matrices, this.getX(), this.getY() + this.height - 3, 0, 20 - 3 + textureY, 3, 3);
+        drawTexture(matrices, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3 + textureY, 3, 3);
 
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + 3, this.getY(), this.width - 6, 3, 3, textureY, 1, 3, 256, 256);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3 + textureY, 3, 1, 256, 256);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3 + textureY, 1, 3, 256, 256);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3 + textureY, 3, 1, 256, 256);
+        drawTexture(matrices, this.getX() + 3, this.getY(), this.width - 6, 3, 3, textureY, 1, 3, 256, 256);
+        drawTexture(matrices, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3 + textureY, 3, 1, 256, 256);
+        drawTexture(matrices, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3 + textureY, 1, 3, 256, 256);
+        drawTexture(matrices, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3 + textureY, 3, 1, 256, 256);
 
-        context.fill(this.getX() + 3, this.getY() + 3, this.getX() + this.width - 3, this.getY() + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
+        fill(matrices, this.getX() + 3, this.getY() + 3, this.getX() + this.width - 3, this.getY() + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 
-        int color = this.active ? 0xFFFFFF : 0xA0A0A0;
         float textScale = this.emote != null ? 1.3F : 1.0F;
+        int color = this.active ? 0xFFFFFF : 0xA0A0A0;
         int textY = this.emote != null
                     ? this.getY() + this.height - (this.height + client.textRenderer.fontHeight) / 4
                     : this.getY() + (this.height - 8) / 2;
         matrices.scale(textScale, textScale, 1.0F);
-        context.drawCenteredTextWithShadow(
+        drawCenteredTextWithShadow(
+                matrices,
                 client.textRenderer,
                 this.text,
                 (int) ((this.getX() + this.width / 2) / textScale),

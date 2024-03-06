@@ -3,9 +3,9 @@ package me.falu.twitchemotes.gui.screen;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.gui.widget.LimitlessButtonWidget;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -66,12 +66,13 @@ public class MenuSelectionScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
-        super.render(context, mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        super.render(matrices, mouseX, mouseY, delta);
 
         MutableText statusText = Text.literal("Chat: ").append(Text.literal(TwitchEmotes.CHAT_CONNECTED ? Formatting.GREEN + "Connected" : Formatting.RED + "Disconnected"));
-        context.drawCenteredTextWithShadow(
+        drawCenteredTextWithShadow(
+                matrices,
                 this.textRenderer,
                 statusText,
                 this.credentialsButton.getX() / 2,
@@ -79,7 +80,8 @@ public class MenuSelectionScreen extends Screen {
                 0xFFFFFF
         );
         MutableText emotesText = Text.literal("Emotes: ").append(Text.literal("" + TwitchEmotes.getEmoteKeys().size()).formatted(Formatting.BLUE));
-        context.drawCenteredTextWithShadow(
+        drawCenteredTextWithShadow(
+                matrices,
                 this.textRenderer,
                 emotesText,
                 this.width - (this.width - (this.otherButton.getX() + this.otherButton.getWidth())) / 2,

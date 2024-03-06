@@ -9,9 +9,9 @@
     "chat.ChatScreenMixin",
     "chat.ClientPlayNetworkHandlerMixin",
 
-    "render.DrawContextMixin",
     "render.DrawerMixin",
     "render.StyleMixin",
+    "render.TextRendererMixin",
 
     "MinecraftClientMixin",
     "ScreenMixin",

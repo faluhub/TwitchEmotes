@@ -2,22 +2,22 @@ package me.falu.twitchemotes.mixin.render;
 
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.Emote;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.font.TextRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(DrawContext.class)
-public class DrawContextMixin {
+@Mixin(TextRenderer.class)
+public class TextRendererMixin {
     @Inject(
             method = {
-                    "drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIIZ)I",
-                    "drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;IIIZ)I"
+                    "draw(Ljava/lang/String;FFILorg/joml/Matrix4f;ZZ)I",
+                    "draw(Lnet/minecraft/text/OrderedText;FFILorg/joml/Matrix4f;Z)I"
             },
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;tryDraw()V",
+                    target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;draw()V",
                     shift = At.Shift.AFTER
             )
     )

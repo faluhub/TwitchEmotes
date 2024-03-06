@@ -2,7 +2,6 @@ package me.falu.twitchemotes.gui.widget;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
@@ -34,14 +33,13 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderButton(context, mouseX, mouseY, delta);
-        MatrixStack matrices = context.getMatrices();
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        super.renderButton(matrices, mouseX, mouseY, delta);
         matrices.push();
         matrices.scale(this.textScale, this.textScale, 1.0F);
         for (int i = 0; i < this.lines.size(); i++) {
-            context.drawTextWithShadow(
-                    this.textRenderer,
+            this.textRenderer.drawWithShadow(
+                    matrices,
                     this.lines.get(i),
                     (int) ((this.getX() + 2) / this.textScale),
                     (int) ((this.getY() + this.textRenderer.fontHeight * i + 2) / this.textScale),

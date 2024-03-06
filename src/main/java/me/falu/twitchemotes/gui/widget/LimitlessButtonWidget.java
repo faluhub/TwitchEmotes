@@ -22,12 +22,6 @@ public class LimitlessButtonWidget extends ButtonWidget {
         this.emote = emote;
     }
 
-    @SuppressWarnings("unused")
-    public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress, TooltipSupplier tooltipSupplier) {
-        super(x, y, width, height, message, onPress, tooltipSupplier);
-        this.emote = emote;
-    }
-
     @Override
     @SuppressWarnings("deprecation")
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -59,7 +53,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
                 matrices,
                 client.textRenderer,
                 this.getMessage(),
-                (int) ((this.x + this.width / 2) / textScale),
+                (int) ((this.x + this.width / 2.0F) / textScale),
                 (int) (textY / textScale),
                 color | MathHelper.ceil(this.alpha * 255.0F) << 24
         );

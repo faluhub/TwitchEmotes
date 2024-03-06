@@ -7,11 +7,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringRenderable;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CosmeticTextFieldWidget extends TextFieldWidget {
     private final List<String> lines = new ArrayList<>();
@@ -22,15 +20,10 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
         super(textRenderer, x + 2, y + 2, width - 4, height - 4, new LiteralText(""));
     }
 
-    @SuppressWarnings("unused")
-    public CosmeticTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, @Nullable TextFieldWidget copyFrom) {
-        super(textRenderer, x + 2, y + 2, width - 4, height - 4, copyFrom, new LiteralText(""));
-    }
-
     public void addTextAsLines(String text) {
         String[] parts = text.split("\n");
         for (String part : parts) {
-            this.lines.addAll(this.textRenderer.wrapLines(new LiteralText(part), (int) (this.width / this.textScale)).stream().map(StringRenderable::getString).collect(Collectors.toList()));
+            this.lines.addAll(this.textRenderer.wrapLines(new LiteralText(part), (int) (this.width / this.textScale)).stream().map(StringRenderable::getString).toList());
         }
     }
 

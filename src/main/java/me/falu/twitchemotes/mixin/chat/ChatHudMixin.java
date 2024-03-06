@@ -22,10 +22,10 @@ import java.util.*;
 
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin implements TwitchMessageListOwner {
-    @Unique private final Map<ChatHudLine, String> messageIds = new HashMap<>();
-    @Unique private final Map<ChatHudLine, String> visibleMessageIds = new HashMap<>();
-    @Shadow @Final private List<ChatHudLine> messages;
-    @Shadow @Final private List<ChatHudLine> visibleMessages;
+    @Unique private final Map<ChatHudLine<Text>, String> messageIds = new HashMap<>();
+    @Unique private final Map<ChatHudLine<OrderedText>, String> visibleMessageIds = new HashMap<>();
+    @Shadow @Final private List<ChatHudLine<Text>> messages;
+    @Shadow @Final private List<ChatHudLine<OrderedText>> visibleMessages;
     @Shadow @Final private MinecraftClient client;
     @Shadow private int scrolledLines;
     @Shadow private boolean hasUnreadNewMessages;
@@ -35,7 +35,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     @Shadow
     public abstract double getChatScale();
     @Shadow
-    public abstract boolean isChatFocused();
+    protected abstract boolean isChatFocused();
     @Shadow
     public abstract void scroll(double amount);
 
@@ -77,15 +77,15 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @Override
     public void twitchemotes$clear() {
-        List<ChatHudLine> lines = new ArrayList<>(this.messages);
-        for (ChatHudLine line : lines) {
+        List<ChatHudLine<Text>> lines = new ArrayList<>(this.messages);
+        for (ChatHudLine<Text> line : lines) {
             if (this.messageIds.containsKey(line)) {
                 this.messageIds.remove(line);
                 this.messages.remove(line);
             }
         }
-        List<ChatHudLine> visibleLines = new ArrayList<>(this.visibleMessages);
-        for (ChatHudLine line : visibleLines) {
+        List<ChatHudLine<OrderedText>> visibleLines = new ArrayList<>(this.visibleMessages);
+        for (ChatHudLine<OrderedText> line : visibleLines) {
             if (this.visibleMessageIds.containsKey(line)) {
                 this.visibleMessageIds.remove(line);
                 this.visibleMessages.remove(line);
@@ -95,15 +95,15 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
 
     @Override
     public void twitchemotes$delete(String id) {
-        Map<ChatHudLine, String> lines = new HashMap<>(this.messageIds);
-        for (Map.Entry<ChatHudLine, String> entry : lines.entrySet()) {
+        Map<ChatHudLine<Text>, String> lines = new HashMap<>(this.messageIds);
+        for (Map.Entry<ChatHudLine<Text>, String> entry : lines.entrySet()) {
             if (entry.getValue().equals(id)) {
                 this.messageIds.remove(entry.getKey());
                 this.messages.remove(entry.getKey());
             }
         }
-        Map<ChatHudLine, String> visibleLines = new HashMap<>(this.visibleMessageIds);
-        for (Map.Entry<ChatHudLine, String> entry : visibleLines.entrySet()) {
+        Map<ChatHudLine<OrderedText>, String> visibleLines = new HashMap<>(this.visibleMessageIds);
+        for (Map.Entry<ChatHudLine<OrderedText>, String> entry : visibleLines.entrySet()) {
             if (entry.getValue().equals(id)) {
                 this.visibleMessageIds.remove(entry.getKey());
                 this.visibleMessages.remove(entry.getKey());
@@ -116,21 +116,21 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
         MutableText message = this.transformText(prefix, content, specific);
         int timestamp = this.client.inGameHud.getTicks();
         int i = MathHelper.floor((double) this.getWidth() / this.getChatScale());
-        List<StringRenderable> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
+        List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
         boolean bl2 = this.isChatFocused();
-        for (StringRenderable stringRenderable2 : list) {
+        for (OrderedText stringRenderable2 : list) {
             if (bl2 && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
                 this.scroll(1.0D);
             }
-            ChatHudLine visibleLine = new ChatHudLine(timestamp, stringRenderable2, 0);
+            ChatHudLine<OrderedText> visibleLine = new ChatHudLine<>(timestamp, stringRenderable2, 0);
             this.visibleMessageIds.put(visibleLine, id);
             this.visibleMessages.add(0, visibleLine);
         }
         while (this.visibleMessages.size() > 100) {
             this.visibleMessageIds.remove(this.visibleMessages.remove(this.visibleMessages.size() - 1));
         }
-        ChatHudLine line = new ChatHudLine(timestamp, message, 0);
+        ChatHudLine<Text> line = new ChatHudLine<>(timestamp, message, 0);
         this.messageIds.put(line, id);
         this.messages.add(0, line);
         while (this.messages.size() > 100) {
@@ -138,8 +138,8 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
         }
     }
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/StringRenderable;IIZ)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private StringRenderable transformMessageText(StringRenderable text) {
-        return this.transformText(new LiteralText(""), (Text) text, Maps.newHashMap());
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private Text transformMessageText(Text text) {
+        return this.transformText(new LiteralText(""), text, Maps.newHashMap());
     }
 }

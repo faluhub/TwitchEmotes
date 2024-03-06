@@ -128,7 +128,7 @@ public class CredentialsConfigScreen extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.hintField != null) {
             this.hintField.render(matrices, mouseX, mouseY, delta);
-            this.drawStringWithShadow(
+            drawStringWithShadow(
                     matrices,
                     this.textRenderer,
                     "HOW TO:",

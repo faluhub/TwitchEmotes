@@ -6,15 +6,14 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CosmeticTextFieldWidget extends TextFieldWidget {
-    private final List<String> lines = new ArrayList<>();
+    private final List<OrderedText> lines = new ArrayList<>();
     private final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
     private final float textScale = Math.min(1.0F, this.width / 209.0F * 0.8F);
 
@@ -30,7 +29,7 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     public void addTextAsLines(String text) {
         String[] parts = text.split("\n");
         for (String part : parts) {
-            this.lines.addAll(this.textRenderer.wrapLines(new LiteralText(part), (int) (this.width / this.textScale)).stream().map(StringRenderable::getString).collect(Collectors.toList()));
+            this.lines.addAll(this.textRenderer.wrapLines(new LiteralText(part), (int) (this.width / this.textScale)));
         }
     }
 
@@ -41,16 +40,14 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(this.textScale, this.textScale, 1.0F);
         for (int i = 0; i < this.lines.size(); i++) {
-            String line = this.lines.get(i);
-            if (!line.isEmpty()) {
-                this.textRenderer.drawWithShadow(
-                        matrices,
-                        line,
-                        (this.x + 2) / this.textScale,
-                        (this.y + this.textRenderer.fontHeight * i + 2) / this.textScale,
-                        0xFFFFFF
-                );
-            }
+            OrderedText line = this.lines.get(i);
+            this.textRenderer.drawWithShadow(
+                    matrices,
+                    line,
+                    (this.x + 2) / this.textScale,
+                    (this.y + this.textRenderer.fontHeight * i + 2) / this.textScale,
+                    0xFFFFFF
+            );
         }
         RenderSystem.popMatrix();
     }

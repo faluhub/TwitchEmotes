@@ -83,7 +83,7 @@ public class OtherConfigScreen extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.channelNameField != null) {
             this.channelNameField.render(matrices, mouseX, mouseY, delta);
-            this.drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Channel Name (Optional):"), this.channelNameField.x, this.channelNameField.y - 4 - this.textRenderer.fontHeight, 0xFFFFFF);
+            drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Channel Name (Optional):"), this.channelNameField.x, this.channelNameField.y - 4 - this.textRenderer.fontHeight, 0xFFFFFF);
         }
     }
 

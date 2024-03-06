@@ -13,7 +13,7 @@ public class TextRendererMixin {
     @Inject(
             method = {
                     "draw(Ljava/lang/String;FFILnet/minecraft/util/math/Matrix4f;ZZ)I",
-                    "draw(Lnet/minecraft/text/StringRenderable;FFILnet/minecraft/util/math/Matrix4f;Z)I"
+                    "draw(Lnet/minecraft/text/OrderedText;FFILnet/minecraft/util/math/Matrix4f;Z)I"
             },
             at = @At(
                     value = "INVOKE",

@@ -55,7 +55,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
                     ? this.y + this.height - (this.height + client.textRenderer.fontHeight) / 4
                     : this.y + (this.height - 8) / 2;
         RenderSystem.scalef(textScale, textScale, 1.0F);
-        this.drawCenteredText(
+        drawCenteredText(
                 matrices,
                 client.textRenderer,
                 this.getMessage(),

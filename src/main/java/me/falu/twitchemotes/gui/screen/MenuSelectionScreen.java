@@ -71,7 +71,7 @@ public class MenuSelectionScreen extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
 
         MutableText statusText = new LiteralText("Chat: ").append(new LiteralText(TwitchEmotes.CHAT_CONNECTED ? Formatting.GREEN + "Connected" : Formatting.RED + "Disconnected"));
-        this.drawCenteredText(
+        drawCenteredText(
                 matrices,
                 this.textRenderer,
                 statusText,
@@ -80,7 +80,7 @@ public class MenuSelectionScreen extends Screen {
                 0xFFFFFF
         );
         MutableText emotesText = new LiteralText("Emotes: ").append(new LiteralText("" + TwitchEmotes.getEmoteKeys().size()).formatted(Formatting.BLUE));
-        this.drawCenteredText(
+        drawCenteredText(
                 matrices,
                 this.textRenderer,
                 emotesText,

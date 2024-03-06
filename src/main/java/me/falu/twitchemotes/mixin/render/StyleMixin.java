@@ -20,7 +20,7 @@ public abstract class StyleMixin implements EmoteStyleOwner {
     @Unique private Emote emoteStyle;
 
     @Shadow
-    public abstract Style setHoverEvent(@Nullable HoverEvent hoverEvent);
+    public abstract Style withHoverEvent(@Nullable HoverEvent hoverEvent);
 
     @Inject(
             method = {
@@ -28,7 +28,7 @@ public abstract class StyleMixin implements EmoteStyleOwner {
                     "withBold",
                     "withItalic",
                     "withClickEvent",
-                    "setHoverEvent",
+                    "withHoverEvent",
                     "withInsertion",
                     "withFont",
                     "withFormatting(Lnet/minecraft/util/Formatting;)Lnet/minecraft/text/Style;",
@@ -45,14 +45,14 @@ public abstract class StyleMixin implements EmoteStyleOwner {
 
     @Override
     public Style twitchemotes$withEmoteStyle(Emote emoteStyle) {
-        Style style = this.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(emoteStyle.name)));
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(emoteStyle.name)));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(emoteStyle);
         return style;
     }
 
     @Override
     public Style twitchemotes$withBadgeStyle(Badge badgeStyle) {
-        Style style = this.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(badgeStyle.description)));
+        Style style = this.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(badgeStyle.description)));
         style = style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, badgeStyle.clickUrl));
         ((EmoteStyleOwner) style).twitchemotes$setEmoteStyle(badgeStyle);
         return style;

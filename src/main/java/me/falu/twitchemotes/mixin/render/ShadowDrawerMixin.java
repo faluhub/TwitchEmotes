@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(TextRenderer.ShadowDrawer.class)
+@Mixin(TextRenderer.Drawer.class)
 public class ShadowDrawerMixin {
     @Shadow private float x;
     @Shadow private float y;
@@ -22,7 +22,7 @@ public class ShadowDrawerMixin {
     @Shadow @Final private float alpha;
 
     @Inject(
-            method = "onChar",
+            method = "accept",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/font/TextRenderer;method_27518(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V",

@@ -82,7 +82,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
         }
 
         if (this.isHovered() && this.active) {
-            this.renderToolTip(matrices, mouseX, mouseY);
+            this.renderTooltip(matrices, mouseX, mouseY);
         }
     }
 

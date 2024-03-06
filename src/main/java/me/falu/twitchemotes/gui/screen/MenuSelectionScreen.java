@@ -36,7 +36,7 @@ public class MenuSelectionScreen extends Screen {
                 EmoteConstants.NERD,
                 b -> {
                     if (this.client != null) {
-                        this.client.openScreen(new CredentialsConfigScreen());
+                        this.client.setScreen(new CredentialsConfigScreen());
                     }
                 }
         ));
@@ -49,7 +49,7 @@ public class MenuSelectionScreen extends Screen {
                 EmoteConstants.CHATTING,
                 b -> {
                     if (this.client != null) {
-                        this.client.openScreen(new OtherConfigScreen());
+                        this.client.setScreen(new OtherConfigScreen());
                     }
                 }
         ));

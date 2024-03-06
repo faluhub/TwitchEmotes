@@ -93,7 +93,7 @@ public class OtherConfigScreen extends Screen {
             TwitchEmotes.reload();
         }
         if (this.client != null) {
-            this.client.openScreen(new MenuSelectionScreen());
+            this.client.setScreen(new MenuSelectionScreen());
         }
     }
 }

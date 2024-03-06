@@ -36,7 +36,7 @@ public abstract class ChatScreenMixin extends Screen {
     public void addConfigButton(CallbackInfo ci) {
         this.addDrawableChild(new ButtonWidget(0, 0, 20, 20, new LiteralText(""), b -> {
             if (this.client != null) {
-                this.client.openScreen(new MenuSelectionScreen());
+                this.client.setScreen(new MenuSelectionScreen());
             }
         }));
     }

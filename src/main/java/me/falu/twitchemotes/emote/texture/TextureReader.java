@@ -37,13 +37,13 @@ public class TextureReader {
     private List<EmoteBackedTexture> readWebP() throws IOException {
         WebPDecoder.WebPImage image = WebPDecoder.decodeUrl(this.url.toString());
         if (image.frames.size() == 1) {
-            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(image.frames.get(0).img));
+            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(image.frames.get(0).img));
             return List.of(new EmoteBackedTexture(img));
         }
         List<EmoteBackedTexture> textures = new ArrayList<>();
         for (int i = 0; i < image.frames.size(); i++) {
             WebPDecoder.WebPImageFrame frame = image.frames.get(i);
-            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(frame.img));
+            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(frame.img));
             textures.add(new EmoteBackedTexture(img, frame.delay));
         }
         return textures;
@@ -59,7 +59,7 @@ public class TextureReader {
             Object metadata = metadataField.get(reader);
             Field delayField = metadata.getClass().getDeclaredField("delayTime");
             int delay = delayField.getInt(metadata);
-            NativeImage img = NativeImage.read(NativeImage.Format.ABGR, this.convertImageToBytes(bufferedImage));
+            NativeImage img = NativeImage.read(NativeImage.Format.RGBA, this.convertImageToBytes(bufferedImage));
             textures.add(new EmoteBackedTexture(img, delay));
         }
         return textures;
@@ -67,7 +67,7 @@ public class TextureReader {
 
     private List<EmoteBackedTexture> readStatic() throws IOException {
         InputStream imageStream = this.url.openStream();
-        return List.of(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.ABGR, imageStream)));
+        return List.of(new EmoteBackedTexture(NativeImage.read(NativeImage.Format.RGBA, imageStream)));
     }
 
     private ImageReader getImageReader() throws IOException {

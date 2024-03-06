@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Collection;
 
 @Mixin(CommandSuggestor.class)
-public class ChatInputSuggestorMixin {
+public class CommandSuggestorMixin {
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientCommandSource;getPlayerNames()Ljava/util/Collection;"))
     private Collection<String> suggestEmotes(ClientCommandSource instance) {
         return TwitchEmotes.getEmoteKeys();

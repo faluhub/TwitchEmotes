@@ -7,7 +7,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +18,6 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
 
     public CosmeticTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height) {
         super(textRenderer, x + 1, y + 1, width - 2, height - 2, Text.literal(""));
-    }
-
-    @SuppressWarnings("unused")
-    public CosmeticTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, @Nullable TextFieldWidget copyFrom) {
-        super(textRenderer, x + 2, y + 2, width - 4, height - 4, copyFrom, Text.literal(""));
     }
 
     public void addTextAsLines(String text) {

@@ -36,8 +36,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
     public abstract double getChatScale();
     @Shadow
     protected abstract boolean isChatFocused();
-    @Shadow
-    public abstract void scroll(double amount);
+    @Shadow public abstract void scroll(int i);
 
     @Unique
     private MutableText transformText(Text prefix, String content, Map<String, Emote> specific) {
@@ -121,7 +120,7 @@ public abstract class ChatHudMixin implements TwitchMessageListOwner {
         for (OrderedText stringRenderable2 : list) {
             if (bl2 && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
-                this.scroll(1.0D);
+                this.scroll(1);
             }
             ChatHudLine<OrderedText> visibleLine = new ChatHudLine<>(timestamp, stringRenderable2, 0);
             this.visibleMessageIds.put(visibleLine, id);

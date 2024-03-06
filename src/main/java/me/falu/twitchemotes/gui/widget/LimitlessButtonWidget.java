@@ -86,6 +86,6 @@ public class LimitlessButtonWidget extends ButtonWidget {
     }
 
     private int getTextureY() {
-        return 46 + (!this.active ? 0 : (this.isFocused() ? 2 : 1)) * 20;
+        return 46 + (!this.active ? 0 : (this.isHovered() ? 2 : 1)) * 20;
     }
 }

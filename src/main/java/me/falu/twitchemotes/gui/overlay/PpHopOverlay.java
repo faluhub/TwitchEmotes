@@ -1,6 +1,5 @@
 package me.falu.twitchemotes.gui.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.EmoteConstants;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;

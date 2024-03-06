@@ -24,7 +24,9 @@ public abstract class ChatScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     public void addConfigButton(CallbackInfo ci) {
         this.addDrawableChild(ButtonWidget.builder(Text.literal(""), b -> {
-            this.client.setScreen(new MenuSelectionScreen());
+            if (this.client != null) {
+                this.client.setScreen(new MenuSelectionScreen());
+            }
         }).dimensions(0, 0, 20, 20).build());
     }
 

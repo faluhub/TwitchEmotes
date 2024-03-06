@@ -41,81 +41,15 @@ public class LimitlessButtonWidget extends ButtonWidget {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         Identifier texture = TEXTURES.get(this.active, this.isSelected());
 
-        // Corners
-        context.drawTexture(
-                texture,
-                this.getX(),
-                this.getY(),
-                0,
-                0,
-                3,
-                3
-        );
-        context.drawTexture(
-                texture,
-                this.getX() + this.width - 3,
-                this.getY(),
-                200 - 3,
-                0,
-                3,
-                3
-        );
-        context.drawTexture(
-                texture,
-                this.getX(),
-                this.getY() + this.height - 3,
-                0,
-                20 - 3,
-                3,
-                3
-        );
-        context.drawTexture(
-                texture,
-                this.getX() + this.width - 3,
-                this.getY() + this.height - 3,
-                200 - 3,
-                20 - 3,
-                3,
-                3
-        );
+        context.drawTexture(texture, this.getX(), this.getY(), 0, 0, 3, 3, 200, 20);
+        context.drawTexture(texture, this.getX() + this.width - 3, this.getY(), 200 - 3, 0, 3, 3, 200, 20);
+        context.drawTexture(texture, this.getX(), this.getY() + this.height - 3, 0, 20 - 3, 3, 3, 200, 20);
+        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3, 3, 3, 200, 20);
 
-        // Sides
-        context.drawTexture(
-                texture,
-                this.getX() + 3,
-                this.getY(),
-                this.width - 6, 3,
-                3, 0,
-                1, 3,
-                200, 20
-        );
-        context.drawTexture(
-                texture,
-                this.getX(),
-                this.getY() + 3,
-                3, this.height - 6,
-                0, 3,
-                3, 1,
-                200, 20
-        );
-        context.drawTexture(
-                texture,
-                this.getX() + 3,
-                this.getY() + this.height - 3,
-                this.width - 6, 3,
-                3, 20 - 3,
-                1, 3,
-                200, 20
-        );
-        context.drawTexture(
-                texture,
-                this.getX() + this.width - 3,
-                this.getY() + 3,
-                3, this.height - 6,
-                200 - 3, 3,
-                3, 1,
-                200, 20
-        );
+        context.drawTexture(texture, this.getX() + 3, this.getY(), this.width - 6, 3, 3, 0, 1, 3, 200, 20);
+        context.drawTexture(texture, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3, 3, 1, 200, 20);
+        context.drawTexture(texture, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3, 1, 3, 200, 20);
+        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3, 3, 1, 200, 20);
 
         context.fill(this.getX() + 3, this.getY() + 3, this.getX() + this.width - 3, this.getY() + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 

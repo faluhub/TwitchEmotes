@@ -29,9 +29,9 @@ public class OtherConfigScreen extends Screen {
 
         this.channelNameField = this.addDrawableChild(new TextFieldWidget(
                 this.textRenderer,
-                this.width / 2 - wideButtonWidth / 2 + 2,
+                this.width / 2 - wideButtonWidth / 2 + 1,
                 this.height / 2 - buttonHeight - textFieldHeight - gap - 4,
-                wideButtonWidth - 4,
+                wideButtonWidth - 2,
                 textFieldHeight,
                 Text.literal("")
         ));

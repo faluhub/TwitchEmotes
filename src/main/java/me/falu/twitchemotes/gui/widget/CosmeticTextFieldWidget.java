@@ -18,7 +18,7 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     private final float textScale = Math.min(1.0F, this.width / 209.0F * 0.8F);
 
     public CosmeticTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height) {
-        super(textRenderer, x + 2, y + 2, width - 4, height - 4, Text.literal(""));
+        super(textRenderer, x + 1, y + 1, width - 2, height - 2, Text.literal(""));
     }
 
     @SuppressWarnings("unused")

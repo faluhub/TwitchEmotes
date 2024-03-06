@@ -53,7 +53,7 @@ public class MenuSelectionScreen extends Screen {
                     }
                 }
         ));
-        int closeButtonWidth = (this.otherButton.getX() + this.otherButton.getWidth()) - this.credentialsButton.getX();
+        int closeButtonWidth = (this.otherButton.x + this.otherButton.getWidth()) - this.credentialsButton.x;
         this.addDrawableChild(new LimitlessButtonWidget(
                 this.width / 2 - closeButtonWidth / 2,
                 this.height - 20 - 10,
@@ -75,7 +75,7 @@ public class MenuSelectionScreen extends Screen {
                 matrices,
                 this.textRenderer,
                 statusText.asOrderedText(),
-                this.credentialsButton.getX() / 2,
+                this.credentialsButton.x / 2,
                 this.height / 2 - this.textRenderer.fontHeight / 2,
                 0xFFFFFF
         );
@@ -84,7 +84,7 @@ public class MenuSelectionScreen extends Screen {
                 matrices,
                 this.textRenderer,
                 emotesText.asOrderedText(),
-                this.width - (this.width - (this.otherButton.getX() + this.otherButton.getWidth())) / 2,
+                this.width - (this.width - (this.otherButton.x + this.otherButton.getWidth())) / 2,
                 this.height / 2 - this.textRenderer.fontHeight / 2,
                 0xFFFFFF
         );

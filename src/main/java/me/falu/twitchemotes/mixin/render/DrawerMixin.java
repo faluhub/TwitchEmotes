@@ -4,7 +4,7 @@ import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.EmoteStyleOwner;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.Style;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +19,7 @@ public class DrawerMixin {
     @Shadow @Final private Matrix4f matrix;
     @Shadow @Final private float alpha;
 
-    @Inject(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;drawGlyph(Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V", shift = At.Shift.BEFORE), cancellable = true)
+    @Inject(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;drawGlyph(Lnet/minecraft/client/font/GlyphRenderer;ZZFFFLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumer;FFFFI)V", shift = At.Shift.BEFORE), cancellable = true)
     private void drawEmote(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir) {
         Emote emote = ((EmoteStyleOwner) style).twitchemotes$getEmoteStyle();
         if (emote != null) {

@@ -45,7 +45,7 @@ public class CredentialsConfigScreen extends Screen {
 
         this.loginButton = this.addDrawableChild(new LimitlessButtonWidget(
                 x,
-                this.hintField.getY() + this.hintField.getHeight() + 10,
+                this.hintField.y + this.hintField.getHeight() + 10,
                 buttonWidth,
                 buttonHeight,
                 Text.literal("Login"),
@@ -61,8 +61,8 @@ public class CredentialsConfigScreen extends Screen {
                 }
         ));
         this.pasteButton = this.addDrawableChild(new LimitlessButtonWidget(
-                this.loginButton.getX(),
-                this.loginButton.getY(),
+                this.loginButton.x,
+                this.loginButton.y,
                 buttonWidth,
                 buttonHeight,
                 Text.literal("Paste Info"),
@@ -132,8 +132,8 @@ public class CredentialsConfigScreen extends Screen {
             this.textRenderer.drawWithShadow(
                     matrices,
                     "HOW TO:",
-                    this.hintField.getX(),
-                    this.hintField.getY() - this.textRenderer.fontHeight - 4,
+                    this.hintField.x,
+                    this.hintField.y - this.textRenderer.fontHeight - 4,
                     0xFFFFFF
             );
         }

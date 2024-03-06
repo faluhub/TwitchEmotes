@@ -86,8 +86,8 @@ public class OtherConfigScreen extends Screen {
             this.textRenderer.drawWithShadow(
                     matrices,
                     "Channel Name (Optional):",
-                    this.channelNameField.getX(),
-                    this.channelNameField.getY() - 4 - this.textRenderer.fontHeight,
+                    this.channelNameField.x,
+                    this.channelNameField.y - 4 - this.textRenderer.fontHeight,
                     0xFFFFFF
             );
         }

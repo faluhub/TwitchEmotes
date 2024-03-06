@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class TextRendererMixin {
     @Inject(
             method = {
-                    "draw(Ljava/lang/String;FFILorg/joml/Matrix4f;ZZ)I",
-                    "draw(Lnet/minecraft/text/OrderedText;FFILorg/joml/Matrix4f;Z)I"
+                    "draw(Ljava/lang/String;FFILnet/minecraft/util/math/Matrix4f;ZZ)I",
+                    "draw(Lnet/minecraft/text/OrderedText;FFILnet/minecraft/util/math/Matrix4f;Z)I"
             },
             at = @At(
                     value = "INVOKE",

@@ -41,8 +41,8 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
             this.textRenderer.drawWithShadow(
                     matrices,
                     this.lines.get(i),
-                    (int) ((this.getX() + 2) / this.textScale),
-                    (int) ((this.getY() + this.textRenderer.fontHeight * i + 2) / this.textScale),
+                    (int) ((this.x + 2) / this.textScale),
+                    (int) ((this.y + this.textRenderer.fontHeight * i + 2) / this.textScale),
                     0xFFFFFF
             );
         }

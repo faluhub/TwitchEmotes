@@ -7,21 +7,14 @@ import me.falu.twitchemotes.emote.Emote;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class LimitlessButtonWidget extends ButtonWidget {
-    private static final ButtonTextures TEXTURES = new ButtonTextures(
-            new Identifier("textures/gui/sprites/widget/button.png"),
-            new Identifier("textures/gui/sprites/widget/button_disabled.png"),
-            new Identifier("textures/gui/sprites/widget/button_highlighted.png")
-    );
     private static final int BG_COLOR = ColorHelper.Argb.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = ColorHelper.Argb.getArgb(80, 0, 0, 0);
     private final Emote emote;
@@ -39,17 +32,17 @@ public class LimitlessButtonWidget extends ButtonWidget {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        Identifier texture = TEXTURES.get(this.active, this.isSelected());
+        int textureY = this.getTextureY();
 
-        context.drawTexture(texture, this.getX(), this.getY(), 0, 0, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY(), 200 - 3, 0, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX(), this.getY() + this.height - 3, 0, 20 - 3, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3, 3, 3, 200, 20);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), 0, textureY, 3, 3);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY(), 200 - 3, textureY, 3, 3);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY() + this.height - 3, 0, 20 - 3 + textureY, 3, 3);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3 + textureY, 3, 3);
 
-        context.drawTexture(texture, this.getX() + 3, this.getY(), this.width - 6, 3, 3, 0, 1, 3, 200, 20);
-        context.drawTexture(texture, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3, 3, 1, 200, 20);
-        context.drawTexture(texture, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3, 1, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3, 3, 1, 200, 20);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX() + 3, this.getY(), this.width - 6, 3, 3, textureY, 1, 3, 256, 256);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3 + textureY, 3, 1, 256, 256);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3 + textureY, 1, 3, 256, 256);
+        context.drawTexture(WIDGETS_TEXTURE, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3 + textureY, 3, 1, 256, 256);
 
         context.fill(this.getX() + 3, this.getY() + 3, this.getX() + this.width - 3, this.getY() + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 
@@ -85,5 +78,9 @@ public class LimitlessButtonWidget extends ButtonWidget {
             }
             matrices.pop();
         }
+    }
+
+    private int getTextureY() {
+        return 46 + (!this.active ? 0 : (this.isSelected() ? 2 : 1)) * 20;
     }
 }

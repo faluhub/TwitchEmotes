@@ -125,7 +125,9 @@ public class CredentialsConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
+
         if (this.hintField != null) {
             context.drawTextWithShadow(
                     this.textRenderer,

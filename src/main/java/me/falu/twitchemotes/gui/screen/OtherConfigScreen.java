@@ -29,9 +29,9 @@ public class OtherConfigScreen extends Screen {
 
         this.channelNameField = this.addDrawableChild(new TextFieldWidget(
                 this.textRenderer,
-                this.width / 2 - wideButtonWidth / 2 + 1,
+                this.width / 2 - wideButtonWidth / 2 + 2,
                 this.height / 2 - buttonHeight - textFieldHeight - gap - 4,
-                wideButtonWidth - 2,
+                wideButtonWidth - 4,
                 textFieldHeight,
                 Text.literal("")
         ));
@@ -79,7 +79,9 @@ public class OtherConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
+
         if (this.channelNameField != null) {
             context.drawTextWithShadow(
                     this.textRenderer,

@@ -34,7 +34,7 @@ public class LimitlessButtonWidget extends ButtonWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         MatrixStack matrices = context.getMatrices();
         matrices.push();

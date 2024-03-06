@@ -34,8 +34,8 @@ public class CosmeticTextFieldWidget extends TextFieldWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderButton(context, mouseX, mouseY, delta);
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.scale(this.textScale, this.textScale, 1.0F);

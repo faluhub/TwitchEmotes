@@ -18,7 +18,7 @@ public class ScreenMixin {
     @Shadow public int height;
 
     @Inject(method = "renderBackground", at = @At("TAIL"))
-    private void renderPpOverlay(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void renderPpOverlay(DrawContext context, CallbackInfo ci) {
         if (TwitchEmotesOptions.SHOW_PP_HOP_OVERLAY.getValue()) {
             PP_HOP_OVERLAY.render(context.getMatrices(), this.width, this.height);
         }

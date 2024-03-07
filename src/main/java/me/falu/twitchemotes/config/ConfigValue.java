@@ -149,6 +149,10 @@ public class ConfigValue<T> {
         return this.def;
     }
 
+    public void reset() {
+        this.setValue(this.def);
+    }
+
     @SuppressWarnings("unused")
     public boolean isDefault() {
         return !this.getDefault().equals(this.value);

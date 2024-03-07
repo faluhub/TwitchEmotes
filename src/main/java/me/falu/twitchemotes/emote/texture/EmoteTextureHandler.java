@@ -37,7 +37,7 @@ public class EmoteTextureHandler {
     }
 
     public NativeImage getImage() {
-        if (this.textures.isEmpty() && !this.loading) {
+        if (this.textures.isEmpty() && !this.loading && !this.failed) {
             new Thread(() -> {
                 List<EmoteBackedTexture> textures;
                 URL url;

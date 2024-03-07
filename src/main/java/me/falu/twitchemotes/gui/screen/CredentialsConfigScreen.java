@@ -8,8 +8,10 @@ import me.falu.twitchemotes.gui.widget.LimitlessButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 import java.util.regex.Pattern;
@@ -37,11 +39,15 @@ public class CredentialsConfigScreen extends Screen {
                 buttonWidth,
                 buttonHeight
         ));
-        this.hintField.addTextAsLines("""
+        if (!TwitchEmotes.CHAT_CONNECTED) {
+            this.hintField.addTextAsLines("""
                                               - Clicking on the 'Login' button will open a website where you will be asked to log in.
                                               - After logging in, click the 'Copy' button on the website.
                                               - Then you can click the 'Paste Info' button in-game.
                                               - TwitchEmotes will use these credentials to listen to chat and query your emotes.""");
+        } else {
+            this.hintField.addTextAsLines("- Click on the 'Logout' button to log out.");
+        }
 
         this.loginButton = this.addDrawableChild(new LimitlessButtonWidget(
                 x,
@@ -60,6 +66,29 @@ public class CredentialsConfigScreen extends Screen {
                     }
                 }
         ));
+        this.loginButton.visible = this.loginButton.active = !TwitchEmotes.CHAT_CONNECTED;
+        ButtonWidget logoutButton = this.addDrawableChild(new LimitlessButtonWidget(
+                this.loginButton.getX(),
+                this.loginButton.getY(),
+                this.loginButton.getWidth(),
+                this.loginButton.getHeight(),
+                Text.literal("Logout"),
+                EmoteConstants.HMM,
+                b -> {
+                    b.visible = false;
+                    b.active = false;
+                    TwitchEmotesOptions.TWITCH_NAME.reset();
+                    TwitchEmotesOptions.TWITCH_ID.reset();
+                    TwitchEmotesOptions.TWITCH_CLIENT_ID.reset();
+                    TwitchEmotesOptions.TWITCH_AUTH.reset();
+                    TwitchEmotes.reload();
+                    if (this.client != null) {
+                        this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Logout Successful").formatted(Formatting.GREEN), Text.literal("You're now logged out")));
+                    }
+                    this.close();
+                }
+        ));
+        logoutButton.visible = logoutButton.active = TwitchEmotes.CHAT_CONNECTED;
         this.pasteButton = this.addDrawableChild(new LimitlessButtonWidget(
                 this.loginButton.getX(),
                 this.loginButton.getY(),
@@ -100,8 +129,12 @@ public class CredentialsConfigScreen extends Screen {
                                 }
                             }
                             TwitchEmotes.reload();
+                            this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Login Successful").formatted(Formatting.GREEN), Text.literal("You're now logged in as " + TwitchEmotesOptions.TWITCH_NAME.getValue())));
+                            this.close();
+                            return;
                         }
                     }
+                    this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Login Failed").formatted(Formatting.RED), Text.literal("Your clipboard contents don't match")));
                     b.visible = false;
                     if (this.loginButton != null) {
                         this.loginButton.visible = true;

@@ -54,6 +54,7 @@ public class EmoteTextureHandler {
                 } catch (IOException e) {
                     TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
                     TwitchEmotes.invalidateEmote(this.emote);
+                    this.failed = true;
                     this.loading = false;
                     return;
                 }

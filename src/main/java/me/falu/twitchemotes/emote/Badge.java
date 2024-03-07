@@ -34,7 +34,7 @@ public class Badge extends Emote {
                 JsonObject badge = element.getAsJsonObject();
                 String name = badge.get("set_id").getAsString();
                 JsonArray versions = badge.get("versions").getAsJsonArray();
-                if (versions.size() > 0) {
+                if (!versions.isEmpty()) {
                     JsonObject version = versions.get(0).getAsJsonObject();
                     String clickUrl = version.get("click_url").isJsonNull() ? DEFAULT_CLICK_URL : version.get("click_url").getAsString();
                     result.put(name, new Badge(

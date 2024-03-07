@@ -85,18 +85,22 @@ public class TwitchEmotes implements ClientModInitializer {
     }
 
     public static JsonElement getJsonAuthResponse(String endpoint) {
-        try {
-            URL url = new URL(endpoint);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.addRequestProperty("Authorization", "Bearer " + TwitchEmotesOptions.TWITCH_AUTH.getValue());
-            connection.addRequestProperty("Client-Id", TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue());
-            connection.setUseCaches(false);
-            InputStream inputStream = connection.getInputStream();
-            String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            return JsonParser.parseString(result);
-        } catch (IOException e) {
-            TwitchEmotes.LOGGER.error("Error while making HTTP request", e);
+        String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
+        String clientId = TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue();
+        if (validStrings(auth, clientId)) {
+            try {
+                URL url = new URL(endpoint);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.addRequestProperty("Authorization", "Bearer " + TwitchEmotesOptions.TWITCH_AUTH.getValue());
+                connection.addRequestProperty("Client-Id", TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue());
+                connection.setUseCaches(false);
+                InputStream inputStream = connection.getInputStream();
+                String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                return JsonParser.parseString(result);
+            } catch (IOException e) {
+                TwitchEmotes.LOGGER.error("Error while making HTTP request", e);
+            }
         }
         return null;
     }
@@ -127,8 +131,9 @@ public class TwitchEmotes implements ClientModInitializer {
         String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
         String clientId = TwitchEmotesOptions.TWITCH_CLIENT_ID.getValue();
 
+        EMOTE_MAP.clear();
+        BADGE_MAP.clear();
         if (validStrings(id, auth, clientId)) {
-            EMOTE_MAP.clear();
             for (EmoteProvider provider : EMOTE_PROVIDERS) {
                 List<Emote> emotes = provider.collectEmotes(id);
                 for (Emote emote : emotes) {
@@ -136,7 +141,6 @@ public class TwitchEmotes implements ClientModInitializer {
                 }
                 log("Finished loading " + emotes.size() + " emotes from " + provider.getProviderName() + ".");
             }
-            BADGE_MAP.clear();
             BADGE_MAP.putAll(Badge.getBadges());
         } else {
             LOGGER.warn("No Twitch user ID provided. Skipping loading emotes.");
@@ -148,11 +152,12 @@ public class TwitchEmotes implements ClientModInitializer {
         String auth = TwitchEmotesOptions.TWITCH_AUTH.getValue();
         String channel = TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue().isEmpty() ? name : TwitchEmotesOptions.TWITCH_CHANNEL_NAME.getValue();
 
+        CHAT_CONNECTED = false;
+        if (TWIRK != null) {
+            TWIRK.close();
+            TWIRK = null;
+        }
         if (validStrings(channel, name, auth)) {
-            if (TWIRK != null) {
-                TWIRK.close();
-                TWIRK = null;
-            }
             TWIRK = new TwirkBuilder(channel, name, "oauth:" + auth)
                     .setDebugLogMethod(s -> {
                         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {

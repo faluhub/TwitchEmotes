@@ -9,7 +9,6 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Util;
 
 import java.io.IOException;
-import java.lang.reflect.InaccessibleObjectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ public class EmoteTextureHandler {
     private final Emote emote;
     private final List<EmoteBackedTexture> textures = new ArrayList<>();
     public boolean loading;
+    public boolean failed;
     private int currentFrame = 0;
     private long lastAdvanceTime = 0L;
 
@@ -37,7 +37,7 @@ public class EmoteTextureHandler {
     }
 
     public NativeImage getImage() {
-        if (this.textures.isEmpty() && !this.loading) {
+        if (this.textures.isEmpty() && !this.loading && !this.failed) {
             new Thread(() -> {
                 List<EmoteBackedTexture> textures;
                 URL url;
@@ -51,7 +51,7 @@ public class EmoteTextureHandler {
                 try {
                     TextureReader textureReader = new TextureReader(url, this.emote.imageType);
                     textures = new ArrayList<>(textureReader.read());
-                } catch (IOException | IllegalAccessException | NoSuchFieldException | InaccessibleObjectException e) {
+                } catch (IOException e) {
                     TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
                     TwitchEmotes.invalidateEmote(this.emote);
                     this.loading = false;

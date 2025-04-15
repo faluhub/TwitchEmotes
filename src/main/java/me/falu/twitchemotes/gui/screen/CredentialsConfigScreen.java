@@ -97,43 +97,47 @@ public class CredentialsConfigScreen extends Screen {
                 Text.literal("Paste Info"),
                 EmoteConstants.OK,
                 b -> {
-                    b.active = false;
-                    if (this.client != null) {
-                        String clipboard = this.client.keyboard.getClipboard();
-                        if (PATTERN.matcher(clipboard).matches()) {
-                            for (String pair : clipboard.split(";")) {
-                                String[] relation = pair.split("=");
-                                if (relation.length != 2) {
-                                    continue;
-                                }
-                                String key = relation[0];
-                                String value = relation[1];
-                                switch (key) {
-                                    default:
-                                        break;
-                                    case "username":
-                                        TwitchEmotesOptions.TWITCH_NAME.setValue(value);
-                                        if (!TwitchEmotesOptions.TWITCH_CHANNEL_NAME.isDefault()) {
-                                            TwitchEmotesOptions.TWITCH_CHANNEL_NAME.setValue(value);
-                                        }
-                                        break;
-                                    case "user_id":
-                                        TwitchEmotesOptions.TWITCH_ID.setValue(value);
-                                        break;
-                                    case "client_id":
-                                        TwitchEmotesOptions.TWITCH_CLIENT_ID.setValue(value);
-                                        break;
-                                    case "oauth_token":
-                                        TwitchEmotesOptions.TWITCH_AUTH.setValue(value);
-                                        break;
-                                }
-                            }
-                            TwitchEmotes.reload();
-                            this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Login Successful").formatted(Formatting.GREEN), Text.literal("You're now logged in as " + TwitchEmotesOptions.TWITCH_NAME.getValue())));
-                            this.close();
-                            return;
-                        }
+                    if (this.client == null || this.client.getToastManager() == null) {
+                        return;
                     }
+
+                    b.active = false;
+
+                    String clipboard = this.client.keyboard.getClipboard();
+                    if (PATTERN.matcher(clipboard).matches()) {
+                        for (String pair : clipboard.split(";")) {
+                            String[] relation = pair.split("=");
+                            if (relation.length != 2) {
+                                continue;
+                            }
+                            String key = relation[0];
+                            String value = relation[1];
+                            switch (key) {
+                                case "username":
+                                    TwitchEmotesOptions.TWITCH_NAME.setValue(value);
+                                    if (!TwitchEmotesOptions.TWITCH_CHANNEL_NAME.isDefault()) {
+                                        TwitchEmotesOptions.TWITCH_CHANNEL_NAME.setValue(value);
+                                    }
+                                    break;
+                                case "user_id":
+                                    TwitchEmotesOptions.TWITCH_ID.setValue(value);
+                                    break;
+                                case "client_id":
+                                    TwitchEmotesOptions.TWITCH_CLIENT_ID.setValue(value);
+                                    break;
+                                case "oauth_token":
+                                    TwitchEmotesOptions.TWITCH_AUTH.setValue(value);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        TwitchEmotes.reload();
+                        this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Login Successful").formatted(Formatting.GREEN), Text.literal("You're now logged in as " + TwitchEmotesOptions.TWITCH_NAME.getValue())));
+                        this.close();
+                        return;
+                    }
+
                     this.client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, Text.literal("Login Failed").formatted(Formatting.RED), Text.literal("Your clipboard contents don't match")));
                     b.visible = false;
                     if (this.loginButton != null) {

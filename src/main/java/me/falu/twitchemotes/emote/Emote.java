@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.falu.twitchemotes.TwitchEmotes;
 import me.falu.twitchemotes.emote.texture.EmoteTextureHandler;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import org.joml.Matrix4f;
 
@@ -31,13 +32,14 @@ public class Emote {
         this.textureHandler.postRender();
     }
 
+    @SuppressWarnings("resource")
     public void createTextureBuffer(Matrix4f matrix, float x, float y, float alpha) {
         int glId = this.textureHandler.getGlId();
         if (glId == -1) {
             return;
         }
         RenderSystem.setShaderTexture(0, glId);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         RenderSystem.enableBlend();
         float size = TwitchEmotes.EMOTE_SIZE;
         float width = this.textureHandler.getWidth();

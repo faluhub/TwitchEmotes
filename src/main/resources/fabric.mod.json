@@ -22,7 +22,7 @@
   ],
   "accessWidener": "twitchemotes.accesswidener",
   "depends": {
-    "minecraft": ">=1.21 <=1.21.1",
+    "minecraft": ">=1.21.2 <=1.21.4",
     "fabricloader": ">=0.15.0"
   }
 }

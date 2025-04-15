@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +44,6 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     public void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        context.drawTexture(BUTTON_ICON, 2, 2, 0.0F, 0.0F, 16, 16, 16, 16);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, BUTTON_ICON, 2, 2, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 }

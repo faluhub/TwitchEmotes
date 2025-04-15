@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -21,8 +22,8 @@ public class LimitlessButtonWidget extends ButtonWidget {
             Identifier.of("textures/gui/sprites/widget/button_disabled.png"),
             Identifier.of("textures/gui/sprites/widget/button_highlighted.png")
     );
-    private static final int BG_COLOR = ColorHelper.Argb.getArgb(150, 0, 0, 0);
-    private static final int BG_INACTIVE_COLOR = ColorHelper.Argb.getArgb(80, 0, 0, 0);
+    private static final int BG_COLOR = ColorHelper.getArgb(150, 0, 0, 0);
+    private static final int BG_INACTIVE_COLOR = ColorHelper.getArgb(80, 0, 0, 0);
     private final Emote emote;
 
     public LimitlessButtonWidget(int x, int y, int width, int height, Text message, Emote emote, PressAction onPress) {
@@ -40,15 +41,22 @@ public class LimitlessButtonWidget extends ButtonWidget {
 
         Identifier texture = TEXTURES.get(this.active, this.isSelected());
 
-        context.drawTexture(texture, this.getX(), this.getY(), 0, 0, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY(), 200 - 3, 0, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX(), this.getY() + this.height - 3, 0, 20 - 3, 3, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3, 3, 3, 200, 20);
-
-        context.drawTexture(texture, this.getX() + 3, this.getY(), this.width - 6, 3, 3, 0, 1, 3, 200, 20);
-        context.drawTexture(texture, this.getX(), this.getY() + 3, 3, this.height - 6, 0, 3, 3, 1, 200, 20);
-        context.drawTexture(texture, this.getX() + 3, this.getY() + this.height - 3, this.width - 6, 3, 3, 20 - 3, 1, 3, 200, 20);
-        context.drawTexture(texture, this.getX() + this.width - 3, this.getY() + 3, 3, this.height - 6, 200 - 3, 3, 3, 1, 200, 20);
+        // top left corner
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX(), this.getY(), 0, 0, 3, 3, 200, 20);
+        // top right corner
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX() + this.width - 3, this.getY(), 200 - 3, 0, 3, 3, 200, 20);
+        // bottom right corner
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX() + this.width - 3, this.getY() + this.height - 3, 200 - 3, 20 - 3, 3, 3, 200, 20);
+        // bottom left corner
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX(), this.getY() + this.height - 3, 0, 20 - 3, 3, 3, 200, 20);
+        // top side
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX() + 3, this.getY(), 3, 0, this.width - 3 * 2, 3, 200 - 3 * 2, 3, 200, 20);
+        // right side
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX() + this.width - 3, this.getY() + 3, 200 - 3, 3, 3, this.height - 3 * 2, 3, 20 - 3 * 2, 200, 20);
+        // bottom side
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX() + 3, this.getY() + this.height - 3, 3, 20 - 3, this.width - 3 * 2, 3, 200 - 3 * 2, 3, 200, 20);
+        // left side
+        context.drawTexture(RenderLayer::getGuiTextured, texture, this.getX(), this.getY() + 3, 0, 3, 3, this.height - 3 * 2, 3, 20 - 3 * 2, 200, 20);
 
         context.fill(this.getX() + 3, this.getY() + 3, this.getX() + this.width - 3, this.getY() + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
 

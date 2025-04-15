@@ -29,9 +29,9 @@ public class TextureReader {
 
     public List<EmoteBackedTexture> read() throws IOException {
         return switch (this.imageType) {
-            default -> this.readStatic();
             case WEBP -> this.readWebP();
             case GIF -> this.readGIF();
+            default -> this.readStatic();
         };
     }
 

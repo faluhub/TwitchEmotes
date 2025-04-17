@@ -37,36 +37,44 @@ public class EmoteTextureHandler {
     }
 
     public NativeImage getImage() {
-        if (this.textures.isEmpty() && !this.loading && !this.failed) {
-            new Thread(() -> {
-                List<EmoteBackedTexture> textures;
-                URL url;
-                try {
-                    url = new URL(this.emote.url.replace("http:", "https:"));
-                } catch (MalformedURLException ignored) {
-                    TwitchEmotes.LOGGER.error("Invalid URL for emote '" + this.emote.name + "'.");
-                    TwitchEmotes.invalidateEmote(this.emote);
-                    return;
-                }
-                try {
-                    TextureReader textureReader = new TextureReader(url, this.emote.imageType);
-                    textures = new ArrayList<>(textureReader.read());
-                } catch (IOException e) {
-                    TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
-                    TwitchEmotes.invalidateEmote(this.emote);
-                    this.failed = true;
+        try{
+            if (this.textures.isEmpty() && !this.loading && !this.failed) {
+                new Thread(() -> {
+                    List<EmoteBackedTexture> textures;
+                    URL url;
+                    try {
+                        url = new URL(this.emote.url.replace("http:", "https:"));
+                    } catch (MalformedURLException ignored) {
+                        TwitchEmotes.LOGGER.error("Invalid URL for emote '" + this.emote.name + "'.");
+                        TwitchEmotes.invalidateEmote(this.emote);
+                        return;
+                    }
+                    try {
+                        TextureReader textureReader = new TextureReader(url, this.emote.imageType);
+                        textures = new ArrayList<>(textureReader.read());
+                    } catch (IOException e) {
+                        TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
+                        TwitchEmotes.invalidateEmote(this.emote);
+                        this.failed = true;
+                        this.loading = false;
+                        return;
+                    }
+                    this.textures.addAll(textures);
                     this.loading = false;
-                    return;
-                }
-                this.textures.addAll(textures);
-                this.loading = false;
-            }).start();
-            this.loading = true;
-            return null;
-        } else if (this.loading) {
+                }).start();
+                this.loading = true;
+                return null;
+            } else if (this.loading) {
+                return null;
+            }
+            return this.textures.get(this.currentFrame).getImage();
+        } catch (Exception e) {
+            TwitchEmotes.LOGGER.error("Error while reading image for '" + this.emote.name + "'", e);
+            TwitchEmotes.invalidateEmote(this.emote);
+            this.failed = true;
+            this.loading = false;
             return null;
         }
-        return this.textures.get(this.currentFrame).getImage();
     }
 
     public void postRender() {
